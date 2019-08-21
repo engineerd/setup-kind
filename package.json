@@ -17,7 +17,7 @@
     "node",
     "setup"
   ],
-  "author": "GitHub",
+  "author": "Engineerd",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.0.0"
