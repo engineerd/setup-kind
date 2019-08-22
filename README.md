@@ -1,6 +1,6 @@
 # @engineerd/setup-kind
 
-Setup [KinD (Kubernetes in Docker)][https://kind.sigs.k8s.io/] with a single GitHub Action!
+Setup [KinD (Kubernetes in Docker)](https://kind.sigs.k8s.io/) with a single GitHub Action!
 
 > This action assumes a Linux environment, and will _not_ work on Windows or MacOS.
 
