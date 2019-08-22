@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: engineerd/setup-kind@v0.3.0
+    - uses: engineerd/setup-kind@v0.1.0
         with:
             version: <kind-version>
             <other input>: <other-value>        
