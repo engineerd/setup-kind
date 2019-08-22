@@ -1,12 +1,12 @@
 {
-  "name": "node12-template-action",
-  "version": "0.0.0",
+  "name": "setup-kind",
+  "version": "0.3.0",
   "private": true,
-  "description": "Node 12 template action",
+  "description": "GitHub Action to setup KinD (Kubernetes in Docker)",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "mocha --require ts-node/register --recursive ./test/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -20,14 +20,18 @@
   "author": "Engineerd",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.0.0"
+    "@actions/core": "^1.0.0",
+    "@actions/tool-cache": "^1.1.0",
+    "@actions/exec": "^1.0.0",
+    "@actions/io": "^1.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.13",
+    "@types/chai": "^4.0.1",
+    "@types/mocha": "^2.2.41",
+    "chai": "^4.1.0",
+    "mocha": "^6.2.0",
+    "ts-node": "^7.0.0",
     "@types/node": "^12.0.4",
-    "jest": "^24.8.0",
-    "jest-circus": "^24.7.1",
-    "ts-jest": "^24.0.2",
     "typescript": "^3.5.1"
   }
 }
