@@ -54,9 +54,6 @@ export class KindConfig {
 
         console.log("Executing kind with args " + this.getCommand());
         await exec.exec("kind", this.getCommand());
-
-        // extra step for waiting on pods to be ready
-        await exec.exec("kubectl wait --for=condition=Ready pods --all --namespace kube-system");
     }
 }
 
