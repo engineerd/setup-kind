@@ -18,7 +18,7 @@ inputs:
 
   skipClusterCreation:
     description: "If true, the action will not create a cluster, just acquire the tools"
-    default: false
+    default: "false"
 runs:
   using: "node12"
   main: "lib/main.js"

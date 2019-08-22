@@ -14,9 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: engineerd/setup-kind@v0.1.0
-        with:
-            version: <kind-version>
-            <other input>: <other-value>        
     - name: Testing
       run: |
         export KUBECONFIG="$(kind get kubeconfig-path)"
@@ -30,23 +27,35 @@ jobs:
 The following arguments can be configured on the job using the `with` keyword (see example above).
 Currently, possible inputs are all the flags for `kind cluster create`, with the additional version, which sets the Kind version to downloadm and `skipClusterCreation`, which when present, skips creating the cluster (the Kind tools is configured in the path).
 
-```
-inputs:
-  version:
-    description: "Version of Kind to use (default v0.5.1)"
-    default: "v0.5.1"
-  config:
-    description: "Path (relative to the root of the repository) to a kind config file"
-  image:
-    description: "Node Docker image to use for booting the cluster"
-  name:
-    description: "Cluster context name (default kind)"
-    default: "kind"
-  wait:
-    description: "Wait for control plane node to be ready (default 300s)"
-    default: "300s"
+Optional inputs:
 
-  skipClusterCreation:
-    description: "If true, the action will not create a cluster, just acquire the tools"
-    default: false
+- `version`: version of Kind to use (default `"v0.5.1"`)
+- `config`: path (relative to the root of the repository) to a kind config file. If omitted, a default 1-node cluster will be created
+- `image`: node Docker image to use for booting the cluster.
+- `name`: cluster context name (default `"kind"`)
+- `wait`: wait for control plane node to be ready (default `"300s"`)
+- `skipClusterCreation`: if `"true"`, the action will not create a cluster, just acquire the tools
+
+Example using optional inputs:
+
+```
+name: "Create cluster using KinD"
+on: [pull_request, push]
+
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: engineerd/setup-kind@v0.1.0
+        with:
+            version: "v0.5.0"        
+    - name: Testing
+      run: |
+        export KUBECONFIG="$(kind get kubeconfig-path)"
+        kubectl cluster-info
+        kubectl get pods -n kube-system
+
+
+
 ```
