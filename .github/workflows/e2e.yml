@@ -7,8 +7,8 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: engineerd/setup-kind@v0.1.0
-        with:
-            version: "v0.6.1"        
+      with:
+          version: "v0.6.1"        
     - name: Testing
       run: |
         kubectl cluster-info
