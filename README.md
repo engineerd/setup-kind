@@ -2,7 +2,7 @@
 
 Setup [KinD (Kubernetes in Docker)](https://kind.sigs.k8s.io/) with a single GitHub Action!
 
-> This action assumes a Linux environment, and will _not_ work on Windows or MacOS.
+> This action assumes a Linux environment, and will _not_ work on Windows or MacOS agents.
 
 ```
 name: "Create cluster using KinD"
@@ -16,13 +16,12 @@ jobs:
     - uses: engineerd/setup-kind@v0.1.0
     - name: Testing
       run: |
-        export KUBECONFIG="$(kind get kubeconfig-path)"
         kubectl cluster-info
         kubectl get pods -n kube-system
 ```
 
-> Note: environment variables are not persisted, so the first step in your job should be `export KUBECONFIG="$(kind get kubeconfig-path)"`.
-> Note: GitHub Actions workers come pre-configured with `kubectl` version 1.15.1.
+> Note: KUBECONFIG is automatically merged after cluster creation, so starting with version 0.6 of Kind, you do not need to manually export the `KUBECONFIG` environment variable. See [this document for a detailed migration guide][kind-kubeconfig]
+> Note: GitHub Actions workers come pre-configured with `kubectl` version 1.16.3.
 
 The following arguments can be configured on the job using the `with` keyword (see example above).
 Currently, possible inputs are all the flags for `kind cluster create`, with the additional version, which sets the Kind version to downloadm and `skipClusterCreation`, which when present, skips creating the cluster (the Kind tools is configured in the path).
@@ -52,10 +51,8 @@ jobs:
             version: "v0.5.0"        
     - name: Testing
       run: |
-        export KUBECONFIG="$(kind get kubeconfig-path)"
         kubectl cluster-info
         kubectl get pods -n kube-system
-
-
-
 ```
+
+[kind-kubeconfig]: https://github.com/kubernetes-sigs/kind/issues/1060

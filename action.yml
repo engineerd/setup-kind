@@ -3,8 +3,8 @@ description: "Easily run a Kubernetes cluster in your GitHub Action"
 author: "Engineerd"
 inputs:
   version:
-    description: "Version of Kind to use (default v0.5.1)"
-    default: "v0.5.1"
+    description: "Version of Kind to use (default v0.6.1)"
+    default: "v0.6.1"
   config:
     description: "Path (relative to the root of the repository) to a kind config file"
   image:
