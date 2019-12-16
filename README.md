@@ -28,7 +28,7 @@ Currently, possible inputs are all the flags for `kind cluster create`, with the
 
 Optional inputs:
 
-- `version`: version of Kind to use (default `"v0.5.1"`)
+- `version`: version of Kind to use (default `"v0.6.1"`)
 - `config`: path (relative to the root of the repository) to a kind config file. If omitted, a default 1-node cluster will be created
 - `image`: node Docker image to use for booting the cluster.
 - `name`: cluster context name (default `"kind"`)
