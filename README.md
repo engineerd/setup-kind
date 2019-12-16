@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: engineerd/setup-kind@v0.1.0
+    - uses: engineerd/setup-kind@v0.2.0
     - name: Testing
       run: |
         kubectl cluster-info
@@ -46,9 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: engineerd/setup-kind@v0.1.0
+    - uses: engineerd/setup-kind@v0.2.0
       with:
-          version: "v0.5.0"        
+          version: "v0.6.0"        
     - name: Testing
       run: |
         kubectl cluster-info
