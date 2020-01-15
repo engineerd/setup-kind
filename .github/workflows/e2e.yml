@@ -5,12 +5,10 @@ jobs:
   kind:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: engineerd/setup-kind@v0.2.0
-      with:
-          version: "v0.6.1"        
-    - name: Testing
-      run: |
-        kubectl cluster-info
-        kubectl version
-        kubectl get pods -n kube-system
+      - uses: actions/checkout@master
+      - uses: engineerd/setup-kind@v0.3.0
+      - name: Testing
+        run: |
+          kubectl cluster-info
+          kubectl version
+          kubectl get pods -n kube-system
