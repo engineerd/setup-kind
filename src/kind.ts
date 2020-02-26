@@ -70,13 +70,19 @@ export function getKindConfig(): KindConfig {
 
 // this action should always be run from a Linux worker
 export async function downloadKind(version: string) {
-    let url: string = `https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-linux-amd64`;
-    console.log("downloading kind from " + url);
-    let downloadPath: string | null = null;
-    downloadPath = await tc.downloadTool(url);
-    await exec.exec("chmod", ["+x", downloadPath]);
-    let toolPath = await tc.cacheFile(downloadPath, "kind", "kind", version);
-    core.debug(`kind is cached under ${toolPath}`);
+    let toolPath: string = tc.find("kind", version);
+
+    if (toolPath !== "") {
+        console.log(`found a cached file in ${toolPath}`)
+    } else {
+        let url: string = `https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-linux-amd64`;
+        console.log("downloading kind from " + url);
+        let downloadPath: string | null = null;
+        downloadPath = await tc.downloadTool(url);
+        await exec.exec("chmod", ["+x", downloadPath]);
+        toolPath = await tc.cacheFile(downloadPath, "kind", "kind", version);
+        core.debug(`kind is cached under ${toolPath}`);
+    }
 
     core.addPath(toolPath);
 }
