@@ -6,7 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: engineerd/setup-kind@v0.3.0
+      - name: "npm install"
+        run: npm install
+      - name: "npm run build"
+        run: npm run build
+      - uses: ./
       - name: Testing
         run: |
           kubectl cluster-info

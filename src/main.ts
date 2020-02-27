@@ -1,10 +1,11 @@
 import * as core from '@actions/core';
-import { KindConfig, getKindConfig, downloadKind } from './kind';
+import { KindConfig, getKindConfig, getKind } from './kind';
 
 async function run() {
   try {
     let cfg: KindConfig = getKindConfig();
-    await downloadKind(cfg.version);
+    let toolPath: string = await getKind(cfg.version);
+    core.addPath(toolPath);
     await cfg.createCluster();
   } catch (error) {
     core.setFailed(error.message);
