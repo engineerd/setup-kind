@@ -11,6 +11,8 @@ const NameInput: string = "name";
 const WaitInput: string = "wait";
 const SkipClusterCreationInput: string = "skipClusterCreation";
 
+const toolName: string = "kind";
+
 export class KindConfig {
     version: string
     configFile: string;
@@ -69,21 +71,24 @@ export function getKindConfig(): KindConfig {
 }
 
 // this action should always be run from a Linux worker
-export async function downloadKind(version: string) {
-    let toolPath: string = tc.find("kind", version);
+export async function downloadKind(version: string): Promise<string> {
+    let url: string = `https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-linux-amd64`;
+    console.log("downloading kind from " + url);
+    let downloadPath: string | null = null;
+    downloadPath = await tc.downloadTool(url);
+    await exec.exec("chmod", ["+x", downloadPath]);
+    let toolPath: string = await tc.cacheFile(downloadPath, "kind", toolName, version);
+    core.debug(`kind is cached under ${toolPath}`);
 
-    if (toolPath !== "") {
-        console.log(`found a cached file in ${toolPath}`)
-    } else {
-        let url: string = `https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-linux-amd64`;
-        console.log("downloading kind from " + url);
-        let downloadPath: string | null = null;
-        downloadPath = await tc.downloadTool(url);
-        await exec.exec("chmod", ["+x", downloadPath]);
-        toolPath = await tc.cacheFile(downloadPath, "kind", "kind", version);
-        core.debug(`kind is cached under ${toolPath}`);
-    }
-
-    core.addPath(toolPath);
+    return toolPath;
 }
 
+export async function getKind(version: string): Promise<string> {
+  let toolPath: string = tc.find(toolName, version);
+
+  if (toolPath === "") {
+    toolPath = await downloadKind(version);
+  }
+
+  return toolPath;
+}
