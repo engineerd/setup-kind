@@ -37,9 +37,9 @@ describe("checking input parsing", function () {
     });
 
     it("correctly set verbose", () => {
-        process.env["INPUT_VERBOSE"] = "2";
+        process.env["INPUT_VERBOSITY"] = "3";
         let cfg: KindConfig = getKindConfig();
-        assert.equal(cfg.verbosity, "2");
+        assert.equal(cfg.verbosity, "3");
     });
 
     it("correctly generates the cluster create command", () => {
