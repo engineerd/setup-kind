@@ -22,7 +22,7 @@ export class KindConfig {
     waitDuration: string;
     skipClusterCreation: boolean
     verbose: string
-    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string, verbose string) {
+    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string, verbose: string) {
         this.version = version;
         this.configFile = configFile;
         this.image = image;
