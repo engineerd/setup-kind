@@ -10,6 +10,7 @@ const ImageInput: string = "image";
 const NameInput: string = "name";
 const WaitInput: string = "wait";
 const SkipClusterCreationInput: string = "skipClusterCreation";
+const VerboseInput: string = "verbose";
 
 const toolName: string = "kind";
 
@@ -20,12 +21,14 @@ export class KindConfig {
     name: string;
     waitDuration: string;
     skipClusterCreation: boolean
-    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string) {
+    verbose: string
+    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string, verbose string) {
         this.version = version;
         this.configFile = configFile;
         this.image = image;
         this.name = name;
         this.waitDuration = waitDuration;
+        this.verbose = verbose;
         this.skipClusterCreation = (skipClusterCreation == 'true');
     }
 
@@ -45,6 +48,9 @@ export class KindConfig {
         }
         if (this.waitDuration != "") {
             args.push("--wait", this.waitDuration);
+        }
+        if (this.verbose != "") {
+            args.push("--verbosity", this.verbose)
         }
 
         return args;
