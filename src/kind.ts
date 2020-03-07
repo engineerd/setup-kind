@@ -10,7 +10,7 @@ const ImageInput: string = "image";
 const NameInput: string = "name";
 const WaitInput: string = "wait";
 const SkipClusterCreationInput: string = "skipClusterCreation";
-const VerboseInput: string = "verbose";
+const VerbosityInput: string = "verbose";
 
 const toolName: string = "kind";
 
@@ -21,14 +21,14 @@ export class KindConfig {
     name: string;
     waitDuration: string;
     skipClusterCreation: boolean
-    verbose: string
-    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string, verbose: string) {
+    verbosity: string
+    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string, verbosity: string) {
         this.version = version;
         this.configFile = configFile;
         this.image = image;
         this.name = name;
         this.waitDuration = waitDuration;
-        this.verbose = verbose;
+        this.verbosity = verbosity;
         this.skipClusterCreation = (skipClusterCreation == 'true');
     }
 
@@ -49,8 +49,8 @@ export class KindConfig {
         if (this.waitDuration != "") {
             args.push("--wait", this.waitDuration);
         }
-        if (this.verbose != "") {
-            args.push("--verbosity", this.verbose)
+        if (this.verbosity != "") {
+            args.push("--verbosity", this.verbosity)
         }
 
         return args;
@@ -72,7 +72,7 @@ export function getKindConfig(): KindConfig {
     const n: string = core.getInput(NameInput);
     const w: string = core.getInput(WaitInput);
     const s: string = core.getInput(SkipClusterCreationInput);
-    const V: string = core.getInput(VerboseInput);
+    const V: string = core.getInput(VerbosityInput);
 
     return new KindConfig(v, c, i, n, w, s, V);
 }
