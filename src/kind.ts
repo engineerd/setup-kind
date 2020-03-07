@@ -72,8 +72,9 @@ export function getKindConfig(): KindConfig {
     const n: string = core.getInput(NameInput);
     const w: string = core.getInput(WaitInput);
     const s: string = core.getInput(SkipClusterCreationInput);
+    const V: string = core.getInput(VerboseInput);
 
-    return new KindConfig(v, c, i, n, w, s);
+    return new KindConfig(v, c, i, n, w, s, V);
 }
 
 // this action should always be run from a Linux worker
