@@ -5,13 +5,16 @@ jobs:
   check_pr:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-    - name: "npm install"
-      run: npm install
+      - name: "npm install"
+        run: npm install
 
-    - name: "npm run build"
-      run: npm run build
+      - name: "npm run build"
+        run: npm run build
 
-    - name: "npm test"
-      run: npm test
+      - name: "npm test"
+        run: npm test
+
+      - name: "npm audit"
+        run: npm audit
