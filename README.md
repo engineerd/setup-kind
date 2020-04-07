@@ -18,9 +18,11 @@ jobs:
       run: |
         kubectl cluster-info
         kubectl get pods -n kube-system
+        echo "current-context:" $(kubectl config current-context)
+        echo "environment-kubeconfig:" ${KUBECONFIG}
 ```
 
-> Note: KUBECONFIG is automatically merged after cluster creation, so starting with version 0.6 of Kind, you do not need to manually export the `KUBECONFIG` environment variable. See [this document for a detailed migration guide][kind-kubeconfig]
+> Note: KUBECONFIG is automatically merged after cluster creation starting with version 0.6 of Kind. See [this document for a detailed migration guide][kind-kubeconfig]
 
 > Note: GitHub Actions workers come pre-configured with `kubectl`.
 
@@ -32,7 +34,7 @@ Optional inputs:
 - `version`: version of Kind to use (default `"v0.7.0"`)
 - `config`: path (relative to the root of the repository) to a kind config file. If omitted, a default 1-node cluster will be created
 - `image`: node Docker image to use for booting the cluster.
-- `name`: cluster context name (default `"kind"`)
+- `name`: cluster context name (default `"kind-kind"`)
 - `wait`: wait for control plane node to be ready (default `"300s"`)
 - `skipClusterCreation`: if `"true"`, the action will not create a cluster, just acquire the tools
 
@@ -54,6 +56,8 @@ jobs:
       run: |
         kubectl cluster-info
         kubectl get pods -n kube-system
+        echo "current-context:" $(kubectl config current-context)
+        echo "environment-kubeconfig:" ${KUBECONFIG}
 ```
 
 [kind-kubeconfig]: https://github.com/kubernetes-sigs/kind/issues/1060
