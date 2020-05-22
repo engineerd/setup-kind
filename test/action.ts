@@ -38,6 +38,4 @@ describe("checking input parsing", function () {
         let args: string[] = getKindConfig().getCommand();
         assert.deepEqual(args, ["create", "cluster", "--config", "/home/runner/repo/some-path", "--image", testEnvVars.INPUT_IMAGE, "--name", testEnvVars.INPUT_NAME, "--wait", testEnvVars.INPUT_WAIT]);
     });
-
-
 });

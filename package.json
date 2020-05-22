@@ -1,6 +1,6 @@
 {
   "name": "setup-kind",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
   "description": "GitHub Action to setup KinD (Kubernetes in Docker)",
   "main": "lib/main.js",
@@ -20,10 +20,9 @@
   "author": "Engineerd",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.0.0",
-    "@actions/tool-cache": "^1.1.0",
-    "@actions/exec": "^1.0.0",
-    "@actions/io": "^1.0.0"
+    "@actions/core": "^1.2.4",
+    "@actions/tool-cache": "^1.5.5",
+    "@actions/exec": "^1.0.4"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
