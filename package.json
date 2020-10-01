@@ -20,7 +20,7 @@
   "author": "Engineerd",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/tool-cache": "^1.5.5",
     "@actions/exec": "^1.0.4"
   },
