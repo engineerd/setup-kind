@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: engineerd/setup-kind@v0.5.0
         with:
-          version: "v0.9.0"
+          version: "v0.11.1"
       - name: Testing
         run: |
           kubectl cluster-info
