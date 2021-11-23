@@ -48,6 +48,7 @@ Optional inputs:
 - `image`: node Docker image to use for booting the cluster.
 - `name`: cluster context name (default `"kind-kind"`)
 - `wait`: wait for control plane node to be ready (default `"300s"`)
+- `kubeconfig`: sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config
 - `skipClusterCreation`: if `"true"`, the action will not create a cluster, just
   acquire the tools
 

@@ -15,7 +15,8 @@ inputs:
   wait:
     description: "Wait for control plane node to be ready (default 300s)"
     default: "300s"
-
+  kubeconfig:
+    description: "sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config"
   skipClusterCreation:
     description: "If true, the action will not create a cluster, just acquire the tools"
     default: "false"
