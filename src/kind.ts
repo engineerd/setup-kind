@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
 import * as exec from '@actions/exec';
-import * as io from '@actions/io';
 import * as path from 'path';
+import process from 'process';
 
 const VersionInput: string = "version";
 const ConfigInput: string = "config";
@@ -33,7 +33,7 @@ export class KindConfig {
     }
 
     // returns the arguments to pass to `kind create cluster`
-    getCommand(): string[] {
+    createCommand(): string[] {
         let args: string[] = ["create", "cluster"];
         if (this.configFile != "") {
             const wd: string = process.env[`GITHUB_WORKSPACE`] || "";
@@ -54,14 +54,31 @@ export class KindConfig {
         }
         return args;
     }
+    
+    // Returns the arguments to pass to `kind delete cluster`
+    deleteCommand(): string[] {
+        let args: string[] = ["delete", "cluster"];
+        if (this.name != "") {
+            args.push("--name", this.name);
+        }
+        return args;
+   }
+    
+    async executeKindCommand(command: string[]) {
+        console.log("Executing kind with args " + command);
+        await exec.exec("kind", command);
+    }
 
     async createCluster() {
         if (this.skipClusterCreation)
             return;
 
-        console.log("Executing kind with args " + this.getCommand());
-        await exec.exec("kind", this.getCommand());
+        await this.executeKindCommand(this.createCommand());
     }
+    
+    async deleteCluster() {
+        await this.executeKindCommand(this.deleteCommand());
+    } 
 }
 
 export function getKindConfig(): KindConfig {

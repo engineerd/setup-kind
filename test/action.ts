@@ -37,7 +37,12 @@ describe("checking input parsing", function () {
     });
 
     it("correctly generates the cluster create command", () => {
-        let args: string[] = getKindConfig().getCommand();
+        let args: string[] = getKindConfig().createCommand();
         assert.deepEqual(args, ["create", "cluster", "--config", "/home/runner/repo/some-path", "--image", testEnvVars.INPUT_IMAGE, "--name", testEnvVars.INPUT_NAME, "--wait", testEnvVars.INPUT_WAIT, "--kubeconfig", testEnvVars.INPUT_KUBECONFIG]);
+    });
+
+    it("correctly generates the cluster delete command", () => {
+        let args: string[] = getKindConfig().deleteCommand();
+        assert.deepEqual(args, ["delete", "cluster", "--name", testEnvVars.INPUT_NAME]);
     });
 });

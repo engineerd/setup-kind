@@ -13,7 +13,8 @@ jobs:
         run: npm install
       - name: "npm run build"
         run: npm run build
-      - uses: ./
+      - name: "Run engineerd/setup-kind@${{github.sha}}"
+        uses: ./
       - name: Testing
         run: |
           kubectl cluster-info
