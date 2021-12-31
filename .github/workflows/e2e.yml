@@ -6,17 +6,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions/setup-node@v2
         with:
           cache: npm
-      - name: "npm install"
-        run: npm install
-      - name: "npm run build"
-        run: npm run build
+
+      - run: npm install
+
+      - run: npm run build
+
       - name: "Run engineerd/setup-kind@${{github.sha}}"
         uses: ./
-      - name: Testing
-        run: |
-          kubectl cluster-info
-          kubectl version
-          kubectl get pods -n kube-system
+
+      - run: kubectl cluster-info
+
+      - run: kubectl version
+
+      - run: kubectl get pods -n kube-system

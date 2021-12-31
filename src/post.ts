@@ -4,6 +4,7 @@ import { KindConfig, getKindConfig } from './kind';
 async function run() {
   try {
     let cfg: KindConfig = getKindConfig();
+    await cfg.exportClusterLogs();
     await cfg.deleteCluster();
   } catch (error) {
     core.setFailed((error as Error).message);

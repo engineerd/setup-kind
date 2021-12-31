@@ -11,14 +11,10 @@ jobs:
         with:
           cache: npm
 
-      - name: "npm install"
-        run: npm install
+      - run: npm install
 
-      - name: "npm run build"
-        run: npm run build
+      - run: npm run build
 
-      - name: "npm test"
-        run: npm test
+      - run: npm test
 
-      - name: "npm audit"
-        run: npm audit
+      - run: npm audit

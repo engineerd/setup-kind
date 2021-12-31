@@ -10,7 +10,8 @@ const testEnvVars = {
     INPUT_WAIT: '123s',
     INPUT_KUBECONFIG: 'some-kubeconfig-path',
     INPUT_SKIPCLUSTERCREATION: 'false',
-    GITHUB_WORKSPACE: '/home/runner/repo'
+    GITHUB_WORKSPACE: '/home/runner/repo', 
+    HOME: '/home/runner'
 };
 
 describe("checking input parsing", function () {
@@ -43,6 +44,11 @@ describe("checking input parsing", function () {
 
     it("correctly generates the cluster delete command", () => {
         let args: string[] = getKindConfig().deleteCommand();
-        assert.deepEqual(args, ["delete", "cluster", "--name", testEnvVars.INPUT_NAME]);
+        assert.deepEqual(args, ["delete", "cluster", "--name", testEnvVars.INPUT_NAME, "--kubeconfig", testEnvVars.INPUT_KUBECONFIG]);
+    });
+
+    it("correctly generates the cluster export logs command", () => {
+        let args: string[] = getKindConfig().exportLogsCommand();
+        assert.deepEqual(args, ["export", "logs", "/home/runner/.kind/some-name/logs" , "--name", testEnvVars.INPUT_NAME]);
     });
 });

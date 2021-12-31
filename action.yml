@@ -10,7 +10,7 @@ inputs:
   image:
     description: "Node Docker image to use for booting the cluster"
   name:
-    description: "Cluster context name (default kind)"
+    description: "Cluster name (default kind)"
     default: "kind"
   wait:
     description: "Wait for control plane node to be ready (default 300s)"
@@ -19,6 +19,12 @@ inputs:
     description: "sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config"
   skipClusterCreation:
     description: "If true, the action will not create a cluster, just acquire the tools"
+    default: "false"
+  skipClusterDeletion:
+    description: "If true, the action will not delete the cluster"
+    default: "false"
+  skipClusterLogsExport:
+    description: "If true, the action will not export the cluster logs"
     default: "false"
 runs:
   using: "node12"
