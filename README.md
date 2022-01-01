@@ -37,20 +37,23 @@ jobs:
 The following arguments can be configured on the job using the `with` keyword
 (see example above). Currently, possible inputs are all the flags for
 `kind cluster create`, with the additional version, which sets the Kind version
-to downloadm and `skipClusterCreation`, which when present, skips creating the
+to download and `skipClusterCreation`, which when present, skips creating the
 cluster (the Kind tools is configured in the path).
 
 Optional inputs:
 
-- `version`: version of Kind to use (default `"v0.9.0"`)
+- `version`: version of Kind to use (default `"v0.11.1"`)
 - `config`: path (relative to the root of the repository) to a kind config file.
   If omitted, a default 1-node cluster will be created
 - `image`: node Docker image to use for booting the cluster.
-- `name`: cluster context name (default `"kind-kind"`)
+- `name`: cluster name (default `"kind"`)
 - `wait`: wait for control plane node to be ready (default `"300s"`)
 - `kubeconfig`: sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config
 - `skipClusterCreation`: if `"true"`, the action will not create a cluster, just
   acquire the tools
+- `skipClusterDeletion`: if `"true"`, the action will not delete the cluster
+- `skipClusterLogsExport`: if `"true"`, the action will not export the cluster logs
+  
 
 Example using optional inputs:
 
