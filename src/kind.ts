@@ -9,6 +9,7 @@ const ConfigInput: string = "config";
 const ImageInput: string = "image";
 const NameInput: string = "name";
 const WaitInput: string = "wait";
+const KubeConfigInput: string = "kubeconfig";
 const SkipClusterCreationInput: string = "skipClusterCreation";
 
 const toolName: string = "kind";
@@ -19,13 +20,15 @@ export class KindConfig {
     image: string;
     name: string;
     waitDuration: string;
+    kubeConfigFile: string;
     skipClusterCreation: boolean
-    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, skipClusterCreation: string) {
+    constructor(version: string, configFile: string, image: string, name: string, waitDuration: string, kubeConfigFile: string, skipClusterCreation: string) {
         this.version = version;
         this.configFile = configFile;
         this.image = image;
         this.name = name;
         this.waitDuration = waitDuration;
+        this.kubeConfigFile = kubeConfigFile;
         this.skipClusterCreation = (skipClusterCreation == 'true');
     }
 
@@ -46,7 +49,9 @@ export class KindConfig {
         if (this.waitDuration != "") {
             args.push("--wait", this.waitDuration);
         }
-
+        if (this.kubeConfigFile != "") {
+            args.push("--kubeconfig", this.kubeConfigFile);
+        }
         return args;
     }
 
@@ -65,9 +70,10 @@ export function getKindConfig(): KindConfig {
     const i: string = core.getInput(ImageInput);
     const n: string = core.getInput(NameInput);
     const w: string = core.getInput(WaitInput);
+    const k: string = core.getInput(KubeConfigInput);
     const s: string = core.getInput(SkipClusterCreationInput);
 
-    return new KindConfig(v, c, i, n, w, s);
+    return new KindConfig(v, c, i, n, w, k, s);
 }
 
 // this action should always be run from a Linux worker

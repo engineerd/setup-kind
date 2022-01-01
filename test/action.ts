@@ -8,6 +8,7 @@ const testEnvVars = {
     INPUT_IMAGE: 'some-docker-image',
     INPUT_NAME: 'some-name',
     INPUT_WAIT: '123s',
+    INPUT_KUBECONFIG: 'some-kubeconfig-path',
     INPUT_SKIPCLUSTERCREATION: 'false',
     GITHUB_WORKSPACE: '/home/runner/repo'
 };
@@ -25,6 +26,7 @@ describe("checking input parsing", function () {
         assert.equal(cfg.image, testEnvVars.INPUT_IMAGE);
         assert.equal(cfg.name, testEnvVars.INPUT_NAME);
         assert.equal(cfg.waitDuration, testEnvVars.INPUT_WAIT);
+        assert.equal(cfg.kubeConfigFile, testEnvVars.INPUT_KUBECONFIG);
         assert.equal(cfg.skipClusterCreation, false);
     });
 
@@ -36,6 +38,6 @@ describe("checking input parsing", function () {
 
     it("correctly generates the cluster create command", () => {
         let args: string[] = getKindConfig().getCommand();
-        assert.deepEqual(args, ["create", "cluster", "--config", "/home/runner/repo/some-path", "--image", testEnvVars.INPUT_IMAGE, "--name", testEnvVars.INPUT_NAME, "--wait", testEnvVars.INPUT_WAIT]);
+        assert.deepEqual(args, ["create", "cluster", "--config", "/home/runner/repo/some-path", "--image", testEnvVars.INPUT_IMAGE, "--name", testEnvVars.INPUT_NAME, "--wait", testEnvVars.INPUT_WAIT, "--kubeconfig", testEnvVars.INPUT_KUBECONFIG]);
     });
 });
