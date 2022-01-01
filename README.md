@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: engineerd/setup-kind@v0.5.0
+      - uses: engineerd/setup-kind@v0.6.0
       - name: Testing
         run: |
           kubectl cluster-info
@@ -48,12 +48,14 @@ Optional inputs:
 - `image`: node Docker image to use for booting the cluster.
 - `name`: cluster name (default `"kind"`)
 - `wait`: wait for control plane node to be ready (default `"300s"`)
-- `kubeconfig`: sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config
+- `kubeconfig`: sets kubeconfig path instead of
+  $KUBECONFIG or
+  $HOME/.kube/config
 - `skipClusterCreation`: if `"true"`, the action will not create a cluster, just
   acquire the tools
 - `skipClusterDeletion`: if `"true"`, the action will not delete the cluster
-- `skipClusterLogsExport`: if `"true"`, the action will not export the cluster logs
-  
+- `skipClusterLogsExport`: if `"true"`, the action will not export the cluster
+  logs
 
 Example using optional inputs:
 
@@ -66,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: engineerd/setup-kind@v0.5.0
+      - uses: engineerd/setup-kind@v0.6.0
         with:
           version: "v0.11.1"
       - name: Testing
