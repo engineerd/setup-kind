@@ -1,5 +1,4 @@
-import 'mocha';
-import { assert } from 'chai';
+import path from 'path';
 import { KindConfig, getKindConfig } from '../src/kind';
 
 const testEnvVars = {
@@ -17,33 +16,42 @@ const testEnvVars = {
 };
 
 describe('checking input parsing', function () {
+  const originalEnv = process.env;
+
   beforeEach(() => {
-    for (const key in testEnvVars)
-      process.env[key] = testEnvVars[key as keyof typeof testEnvVars];
+    jest.resetModules();
+    process.env = {
+      ...originalEnv,
+      ...testEnvVars,
+    };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
   });
 
   it('correctly parse input', () => {
     const cfg: KindConfig = getKindConfig();
-    assert.equal(cfg.version, testEnvVars.INPUT_VERSION);
-    assert.equal(cfg.configFile, testEnvVars.INPUT_CONFIG);
-    assert.equal(cfg.image, testEnvVars.INPUT_IMAGE);
-    assert.equal(cfg.name, testEnvVars.INPUT_NAME);
-    assert.equal(cfg.waitDuration, testEnvVars.INPUT_WAIT);
-    assert.equal(cfg.kubeConfigFile, testEnvVars.INPUT_KUBECONFIG);
-    assert.equal(cfg.skipClusterCreation, false);
-    assert.equal(cfg.skipClusterDeletion, false);
-    assert.equal(cfg.skipClusterLogsExport, false);
+    expect(cfg.version).toEqual(testEnvVars.INPUT_VERSION);
+    expect(cfg.configFile).toEqual(testEnvVars.INPUT_CONFIG);
+    expect(cfg.image).toEqual(testEnvVars.INPUT_IMAGE);
+    expect(cfg.name).toEqual(testEnvVars.INPUT_NAME);
+    expect(cfg.waitDuration).toEqual(testEnvVars.INPUT_WAIT);
+    expect(cfg.kubeConfigFile).toEqual(testEnvVars.INPUT_KUBECONFIG);
+    expect(cfg.skipClusterCreation).toEqual(false);
+    expect(cfg.skipClusterDeletion).toEqual(false);
+    expect(cfg.skipClusterLogsExport).toEqual(false);
   });
 
   it('correctly set skipClusterCreation', () => {
     process.env['INPUT_SKIPCLUSTERCREATION'] = 'true';
     const cfg: KindConfig = getKindConfig();
-    assert.equal(cfg.skipClusterCreation, true);
+    expect(cfg.skipClusterCreation).toEqual(true);
   });
 
   it('correctly generates the cluster create command', () => {
     const args: string[] = getKindConfig().createCommand();
-    assert.deepEqual(args, [
+    expect(args).toEqual([
       'create',
       'cluster',
       '--verbosity',
@@ -51,7 +59,7 @@ describe('checking input parsing', function () {
       '--quiet',
       testEnvVars.INPUT_QUIET,
       '--config',
-      '/home/runner/repo/some-path',
+      path.normalize('/home/runner/repo/some-path'),
       '--image',
       testEnvVars.INPUT_IMAGE,
       '--name',
@@ -65,7 +73,7 @@ describe('checking input parsing', function () {
 
   it('correctly generates the cluster delete command', () => {
     const args: string[] = getKindConfig().deleteCommand();
-    assert.deepEqual(args, [
+    expect(args).toEqual([
       'delete',
       'cluster',
       '--verbosity',
@@ -81,10 +89,10 @@ describe('checking input parsing', function () {
 
   it('correctly generates the cluster export logs command', () => {
     const args: string[] = getKindConfig().exportLogsCommand();
-    assert.deepEqual(args, [
+    expect(args).toEqual([
       'export',
       'logs',
-      '/home/runner/.kind/some-name/logs',
+      path.normalize('/home/runner/.kind/some-name/logs'),
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',
