@@ -26,6 +26,12 @@ inputs:
   skipClusterLogsExport:
     description: "If true, the action will not export the cluster logs"
     default: "false"
+  verbosity:
+    description: "Defines log verbosity with a numeric value, (info = 0, debug = 3, trace = 2147483647)"
+    default: "0"
+  quiet:
+    description: "Silence all stderr output"
+    default: "false"
 runs:
   using: "node12"
   main: "dist/main/index.js"

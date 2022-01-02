@@ -5,8 +5,8 @@ import process from 'process';
 async function run() {
   try {
     checkEnvironment();
-    let cfg: KindConfig = getKindConfig();
-    let toolPath: string = await cfg.installKind();
+    const cfg: KindConfig = getKindConfig();
+    const toolPath: string = await cfg.installKind();
     core.addPath(toolPath);
     await cfg.createCluster();
   } catch (error) {
@@ -15,11 +15,11 @@ async function run() {
 }
 
 function checkEnvironment() {
-  const supportedPlatforms : string[] = ["linux/x64"];
-  const platform : string = `${process.platform}/${process.arch}`;
+  const supportedPlatforms: string[] = ['linux/x64'];
+  const platform = `${process.platform}/${process.arch}`;
   if (!supportedPlatforms.includes(platform)) {
-    throw new Error(`Platform "${platform}" is not supported`) 
-  } 
-} 
+    throw new Error(`Platform "${platform}" is not supported`);
+  }
+}
 
 run();
