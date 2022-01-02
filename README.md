@@ -53,6 +53,8 @@ Optional inputs:
   acquire the tools
 - `skipClusterDeletion`: if `"true"`, the action will not delete the cluster
 - `skipClusterLogsExport`: if `"true"`, the action will not export the cluster logs
+- `verbosity`: numeric log verbosity, (info = 0, debug = 3, trace = 2147483647) (default `"0"`)
+- `quiet`: silence all stderr output (default `"false"`)
   
 
 Example using optional inputs:
