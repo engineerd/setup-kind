@@ -17,6 +17,8 @@ jobs:
 
       - run: npm run build
 
-      - run: npm test
+      - run: npm run test:coverage
 
+      - uses: codecov/codecov-action@v2
+      
       - run: npm audit

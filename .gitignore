@@ -1,3 +1,5 @@
 node_modules/
 __tests__/runner/*
 lib/
+dist/
+coverage/
