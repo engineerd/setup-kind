@@ -1,5 +1,6 @@
+import os from 'os';
 import path from 'path';
-import { KindConfig, getKindConfig } from '../src/kind';
+import { KindService } from '../src/kind';
 
 const testEnvVars = {
   INPUT_VERBOSITY: '3',
@@ -12,12 +13,10 @@ const testEnvVars = {
   INPUT_KUBECONFIG: 'some-kubeconfig-path',
   INPUT_SKIPCLUSTERCREATION: 'false',
   GITHUB_WORKSPACE: '/home/runner/repo',
-  HOME: '/home/runner',
 };
 
 describe('checking input parsing', function () {
   const originalEnv = process.env;
-
   beforeEach(() => {
     jest.resetModules();
     process.env = {
@@ -31,26 +30,26 @@ describe('checking input parsing', function () {
   });
 
   it('correctly parse input', () => {
-    const cfg: KindConfig = getKindConfig();
-    expect(cfg.version).toEqual(testEnvVars.INPUT_VERSION);
-    expect(cfg.configFile).toEqual(testEnvVars.INPUT_CONFIG);
-    expect(cfg.image).toEqual(testEnvVars.INPUT_IMAGE);
-    expect(cfg.name).toEqual(testEnvVars.INPUT_NAME);
-    expect(cfg.waitDuration).toEqual(testEnvVars.INPUT_WAIT);
-    expect(cfg.kubeConfigFile).toEqual(testEnvVars.INPUT_KUBECONFIG);
-    expect(cfg.skipClusterCreation).toEqual(false);
-    expect(cfg.skipClusterDeletion).toEqual(false);
-    expect(cfg.skipClusterLogsExport).toEqual(false);
+    const service: KindService = KindService.getInstance();
+    expect(service.version).toEqual(testEnvVars.INPUT_VERSION);
+    expect(service.configFile).toEqual(testEnvVars.INPUT_CONFIG);
+    expect(service.image).toEqual(testEnvVars.INPUT_IMAGE);
+    expect(service.name).toEqual(testEnvVars.INPUT_NAME);
+    expect(service.waitDuration).toEqual(testEnvVars.INPUT_WAIT);
+    expect(service.kubeConfigFile).toEqual(testEnvVars.INPUT_KUBECONFIG);
+    expect(service.skipClusterCreation).toEqual(false);
+    expect(service.skipClusterDeletion).toEqual(false);
+    expect(service.skipClusterLogsExport).toEqual(false);
   });
 
   it('correctly set skipClusterCreation', () => {
     process.env['INPUT_SKIPCLUSTERCREATION'] = 'true';
-    const cfg: KindConfig = getKindConfig();
-    expect(cfg.skipClusterCreation).toEqual(true);
+    const service: KindService = KindService.getInstance();
+    expect(service.skipClusterCreation).toEqual(true);
   });
 
   it('correctly generates the cluster create command', () => {
-    const args: string[] = getKindConfig().createCommand();
+    const args: string[] = KindService.getInstance().createCommand();
     expect(args).toEqual([
       'create',
       'cluster',
@@ -72,7 +71,7 @@ describe('checking input parsing', function () {
   });
 
   it('correctly generates the cluster delete command', () => {
-    const args: string[] = getKindConfig().deleteCommand();
+    const args: string[] = KindService.getInstance().deleteCommand();
     expect(args).toEqual([
       'delete',
       'cluster',
@@ -88,11 +87,11 @@ describe('checking input parsing', function () {
   });
 
   it('correctly generates the cluster export logs command', () => {
-    const args: string[] = getKindConfig().exportLogsCommand();
+    const args: string[] = KindService.getInstance().exportLogsCommand();
     expect(args).toEqual([
       'export',
       'logs',
-      path.normalize('/home/runner/.kind/some-name/logs'),
+      path.join(os.tmpdir(), 'kind/some-name/logs'),
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',

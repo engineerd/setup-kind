@@ -1,10 +1,13 @@
-import * as core from '@actions/core';
-import * as tc from '@actions/tool-cache';
-import * as exec from '@actions/exec';
-import * as path from 'path';
 import * as artifact from '@actions/artifact';
+import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import * as glob from '@actions/glob';
+import * as tc from '@actions/tool-cache';
+import os from 'os';
+import * as path from 'path';
 import process from 'process';
+import * as go from './go';
+import * as cache from './cache';
 
 const VersionInput = 'version';
 const VerbosityInput = 'verbosity';
@@ -19,7 +22,7 @@ const SkipClusterDeletionInput = 'skipClusterDeletion';
 const SkipClusterLogsExportInput = 'skipClusterLogsExport';
 const toolName = 'kind';
 
-export class KindConfig {
+export class KindService {
   version: string;
   configFile: string;
   image: string;
@@ -31,30 +34,26 @@ export class KindConfig {
   skipClusterLogsExport: boolean;
   verbosity: number;
   quiet: boolean;
-  constructor(
-    version: string,
-    configFile: string,
-    image: string,
-    name: string,
-    waitDuration: string,
-    kubeConfigFile: string,
-    skipClusterCreation: string,
-    skipClusterDeletion: string,
-    skipClusterLogsExport: string,
-    verbosity: string,
-    quiet: string
-  ) {
-    this.version = version;
-    this.configFile = configFile;
-    this.image = image;
-    this.name = name;
-    this.waitDuration = waitDuration;
-    this.kubeConfigFile = kubeConfigFile;
-    this.skipClusterCreation = skipClusterCreation == 'true';
-    this.skipClusterDeletion = skipClusterDeletion == 'true';
-    this.skipClusterLogsExport = skipClusterLogsExport == 'true';
-    this.verbosity = +verbosity;
-    this.quiet = quiet == 'true';
+
+  private constructor() {
+    this.version = core.getInput(VersionInput);
+    this.configFile = core.getInput(ConfigInput);
+    this.image = core.getInput(ImageInput);
+    this.name = core.getInput(NameInput);
+    this.waitDuration = core.getInput(WaitInput);
+    this.kubeConfigFile = core.getInput(KubeConfigInput);
+    this.skipClusterCreation =
+      core.getInput(SkipClusterCreationInput) === 'true';
+    this.skipClusterDeletion =
+      core.getInput(SkipClusterDeletionInput) === 'true';
+    this.skipClusterLogsExport =
+      core.getInput(SkipClusterLogsExportInput) === 'true';
+    this.verbosity = +core.getInput(VerbosityInput);
+    this.quiet = core.getInput(QuietInput) === 'true';
+  }
+
+  public static getInstance(): KindService {
+    return new KindService();
   }
 
   // returns the arguments to pass to `kind create cluster`
@@ -119,45 +118,76 @@ export class KindConfig {
     return args;
   }
 
-  kindLogsDir(): string {
-    const wd: string = process.env[`HOME`] || '';
-    let dir = './.kind';
-    if (this.name != '') {
-      dir += `/${this.name}`;
+  // this action should always be run from a Linux worker
+  private async downloadKind(): Promise<string> {
+    const url = `https://github.com/kubernetes-sigs/kind/releases/download/${
+      this.version
+    }/kind-${go.goos()}-${go.goarch()}`;
+    console.log('downloading kind from ' + url);
+    let downloadPath: string | null = null;
+    downloadPath = await tc.downloadTool(url);
+    if (process.platform !== 'win32') {
+      await exec.exec('chmod', ['+x', downloadPath]);
     }
-    dir += '/logs';
-    return path.join(wd, dir);
+    const toolPath: string = await tc.cacheFile(
+      downloadPath,
+      this.kindCommand(),
+      toolName,
+      this.version
+    );
+    core.debug(`kind is cached under ${toolPath}`);
+    return toolPath;
   }
 
-  async executeKindCommand(command: string[]) {
-    console.log('Executing kind with args ' + command.join(' '));
-    await exec.exec('kind', command);
+  private kindLogsDir(): string {
+    const dirs: string[] = ['kind'];
+    if (this.name != '') {
+      dirs.push(this.name);
+    }
+    dirs.push('logs');
+    return path.join(os.tmpdir(), ...dirs);
+  }
+
+  private artifactName(): string {
+    const artifactArgs: string[] = ['kind'];
+    if (this.name != '') {
+      artifactArgs.push(this.name);
+    }
+    artifactArgs.push('logs');
+    return artifactArgs.join('-');
+  }
+
+  private kindCommand(): string {
+    return process.platform == 'win32' ? 'kind.exe' : 'kind';
+  }
+
+  async executeKindCommand(args: string[]) {
+    const command = this.kindCommand();
+    console.log(`Executing ${command} with args ` + args.join(' '));
+    await exec.exec(command, args);
   }
 
   async installKind(): Promise<string> {
+    const primaryKey = await cache.restoreKindCache(this.version);
     let toolPath: string = tc.find(toolName, this.version);
     if (toolPath === '') {
-      toolPath = await downloadKind(this.version);
+      toolPath = await this.downloadKind();
+      await cache.saveKindCache(primaryKey);
     }
     return toolPath;
   }
 
   async uploadKindLogs() {
     const artifactClient = artifact.create();
-    let artifactName = 'kind';
-    if (this.name != '') {
-      artifactName += `-${this.name}`;
-    }
-    artifactName += '-logs';
-    const pattern = this.kindLogsDir() + '/**/*';
+    const rootDirectory = this.kindLogsDir();
+    const pattern = rootDirectory + '/**/*';
     const globber = await glob.create(pattern);
     const files = await globber.glob();
-    const rootDirectory = this.kindLogsDir();
     const options = {
       continueOnError: true,
     };
     await artifactClient.uploadArtifact(
-      artifactName,
+      this.artifactName(),
       files,
       rootDirectory,
       options
@@ -185,36 +215,4 @@ export class KindConfig {
     await this.executeKindCommand(this.exportLogsCommand());
     await this.uploadKindLogs();
   }
-}
-
-export function getKindConfig(): KindConfig {
-  const vers: string = core.getInput(VersionInput);
-  const c: string = core.getInput(ConfigInput);
-  const i: string = core.getInput(ImageInput);
-  const n: string = core.getInput(NameInput);
-  const w: string = core.getInput(WaitInput);
-  const k: string = core.getInput(KubeConfigInput);
-  const scc: string = core.getInput(SkipClusterCreationInput);
-  const scd: string = core.getInput(SkipClusterDeletionInput);
-  const scle: string = core.getInput(SkipClusterLogsExportInput);
-  const verb: string = core.getInput(VerbosityInput);
-  const q: string = core.getInput(QuietInput);
-  return new KindConfig(vers, c, i, n, w, k, scc, scd, scle, verb, q);
-}
-
-// this action should always be run from a Linux worker
-export async function downloadKind(version: string): Promise<string> {
-  const url = `https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-linux-amd64`;
-  console.log('downloading kind from ' + url);
-  let downloadPath: string | null = null;
-  downloadPath = await tc.downloadTool(url);
-  await exec.exec('chmod', ['+x', downloadPath]);
-  const toolPath: string = await tc.cacheFile(
-    downloadPath,
-    'kind',
-    toolName,
-    version
-  );
-  core.debug(`kind is cached under ${toolPath}`);
-  return toolPath;
 }
