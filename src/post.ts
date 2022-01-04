@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
-import { KindService } from './kind';
+import { KindPostService } from './kind-post';
 
 async function run() {
   try {
-    const service: KindService = KindService.getInstance();
+    const service: KindPostService = KindPostService.getInstance();
     await service.exportClusterLogs();
     await service.deleteCluster();
   } catch (error) {

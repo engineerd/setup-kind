@@ -1,11 +1,11 @@
 import * as core from '@actions/core';
 import * as go from './go';
-import { KindService } from './kind';
+import { KindMainService } from './kind-main';
 
 async function run() {
   try {
     checkEnvironment();
-    const service: KindService = KindService.getInstance();
+    const service: KindMainService = KindMainService.getInstance();
     const toolPath: string = await service.installKind();
     core.addPath(toolPath);
     await service.createCluster();
