@@ -3,10 +3,10 @@ import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 import path from 'path';
 import process from 'process';
-import * as go from './go';
-import * as cache from './cache';
-import { Input, Flag } from './constants';
-import { kindCommand, executeKindCommand } from './kind-core';
+import * as go from '../go';
+import * as cache from '../cache';
+import { Input, Flag } from '../constants';
+import { kindCommand, executeKindCommand } from './core';
 
 const toolName = 'kind';
 

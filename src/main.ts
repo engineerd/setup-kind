@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as go from './go';
-import { KindMainService } from './kind-main';
+import { KindMainService } from './kind/main';
 
 async function run() {
   try {

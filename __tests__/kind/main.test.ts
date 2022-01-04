@@ -1,5 +1,5 @@
 import path from 'path';
-import { KindMainService } from '../src/kind-main';
+import { KindMainService } from '../../src/kind/main';
 
 const testEnvVars = {
   INPUT_VERBOSITY: '3',

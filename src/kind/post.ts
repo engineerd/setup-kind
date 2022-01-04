@@ -3,8 +3,8 @@ import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 import os from 'os';
 import path from 'path';
-import { Input, Flag } from './constants';
-import { executeKindCommand } from './kind-core';
+import { Input, Flag } from '../constants';
+import { executeKindCommand } from './core';
 
 export class KindPostService {
   configFile: string;

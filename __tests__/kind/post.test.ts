@@ -1,6 +1,6 @@
 import os from 'os';
 import path from 'path';
-import { KindPostService } from '../src/kind-post';
+import { KindPostService } from '../../src/kind/post';
 
 const testEnvVars = {
   INPUT_VERBOSITY: '3',
