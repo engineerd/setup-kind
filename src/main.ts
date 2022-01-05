@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import { ok } from 'assert';
 import * as go from './go';
 import { KindMainService } from './kind/main';
 
@@ -20,6 +21,15 @@ function checkEnvironment() {
   if (!supportedPlatforms.includes(platform)) {
     throw new Error(`Platform "${platform}" is not supported`);
   }
+  const requiredVariables = [
+    'GITHUB_WORKSPACE',
+    'RUNNER_ARCH',
+    'RUNNER_OS',
+    'RUNNER_TOOL_CACHE',
+  ];
+  requiredVariables.forEach((variable) => {
+    ok(`${process.env[variable]}`, `Expected ${variable} to be defined`);
+  });
 }
 
 run();
