@@ -22,3 +22,5 @@ export enum Flag {
   Wait = '--wait',
   KubeConfig = '--kubeconfig',
 }
+
+export const KIND_TOOL_NAME = 'kind';

@@ -3,15 +3,16 @@ import * as core from '@actions/core';
 import crypto from 'crypto';
 import path from 'path';
 import process from 'process';
+import { KIND_TOOL_NAME } from './constants';
 
 const KIND_CACHE_PATHS = [
-  path.join(`${process.env['RUNNER_TOOL_CACHE']}`, 'kind'),
+  path.join(`${process.env['RUNNER_TOOL_CACHE']}`, KIND_TOOL_NAME),
 ];
 
 const KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-setup-kind-`;
 
 /**
- * Restores Kind by version, $RUNNER_OS and $RUNNER_ARCh
+ * Restores Kind by version, $RUNNER_OS and $RUNNER_ARCH
  * @param version
  */
 export async function restoreKindCache(version: string) {

@@ -3,7 +3,7 @@ import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 import os from 'os';
 import path from 'path';
-import { Input, Flag } from '../constants';
+import { Input, Flag, KIND_TOOL_NAME } from '../constants';
 import { executeKindCommand } from './core';
 
 export class KindPostService {
@@ -65,7 +65,7 @@ export class KindPostService {
   }
 
   private kindLogsDir(): string {
-    const dirs: string[] = ['kind'];
+    const dirs: string[] = [KIND_TOOL_NAME];
     if (this.name != '') {
       dirs.push(this.name);
     }
@@ -74,7 +74,7 @@ export class KindPostService {
   }
 
   private artifactName(): string {
-    const artifactArgs: string[] = ['kind'];
+    const artifactArgs: string[] = [KIND_TOOL_NAME];
     if (this.name != '') {
       artifactArgs.push(this.name);
     }

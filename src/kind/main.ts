@@ -5,10 +5,8 @@ import path from 'path';
 import process from 'process';
 import * as go from '../go';
 import * as cache from '../cache';
-import { Input, Flag } from '../constants';
+import { Input, Flag, KIND_TOOL_NAME } from '../constants';
 import { kindCommand, executeKindCommand } from './core';
-
-const toolName = 'kind';
 
 export class KindMainService {
   version: string;
@@ -81,7 +79,7 @@ export class KindMainService {
     const toolPath: string = await tc.cacheFile(
       downloadPath,
       kindCommand(),
-      toolName,
+      KIND_TOOL_NAME,
       this.version
     );
     core.debug(`kind is cached under ${toolPath}`);
@@ -90,7 +88,7 @@ export class KindMainService {
 
   async installKind(): Promise<string> {
     const primaryKey = await cache.restoreKindCache(this.version);
-    let toolPath: string = tc.find(toolName, this.version);
+    let toolPath: string = tc.find(KIND_TOOL_NAME, this.version);
     if (toolPath === '') {
       toolPath = await this.downloadKind();
       await cache.saveKindCache(primaryKey);
