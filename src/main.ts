@@ -1,22 +1,22 @@
 import * as core from '@actions/core';
-import { KindConfig, getKindConfig } from './kind';
-import process from 'process';
+import * as go from './go';
+import { KindMainService } from './kind/main';
 
 async function run() {
   try {
     checkEnvironment();
-    const cfg: KindConfig = getKindConfig();
-    const toolPath: string = await cfg.installKind();
+    const service: KindMainService = KindMainService.getInstance();
+    const toolPath: string = await service.installKind();
     core.addPath(toolPath);
-    await cfg.createCluster();
+    await service.createCluster();
   } catch (error) {
     core.setFailed((error as Error).message);
   }
 }
 
 function checkEnvironment() {
-  const supportedPlatforms: string[] = ['linux/x64'];
-  const platform = `${process.platform}/${process.arch}`;
+  const supportedPlatforms: string[] = ['linux/amd64'];
+  const platform = `${go.goos()}/${go.goarch()}`;
   if (!supportedPlatforms.includes(platform)) {
     throw new Error(`Platform "${platform}" is not supported`);
   }

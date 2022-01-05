@@ -6,8 +6,8 @@
   "main": "lib/main.js",
   "scripts": {
     "build": "npm run build:main && npm run build:post",
-    "build:main": "ncc build -o dist/main src/main.ts",
-    "build:post": "ncc build -o dist/post src/post.ts",
+    "build:main": "ncc build --minify -o dist/main src/main.ts",
+    "build:post": "ncc build --minify -o dist/post src/post.ts",
     "lint": "eslint . --ext .ts,.json",
     "lint:fix": "npm run lint --fix",
     "pre-commit": "lint-staged",
@@ -21,6 +21,10 @@
   },
   "keywords": [
     "actions",
+    "docker",
+    "kind",
+    "kubernetes",
+    "k8s",
     "node",
     "setup"
   ],
@@ -28,6 +32,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/artifact": "^0.6.1",
+    "@actions/cache": "^1.0.8",
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
     "@actions/glob": "^0.2.0",

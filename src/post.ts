@@ -1,11 +1,11 @@
 import * as core from '@actions/core';
-import { KindConfig, getKindConfig } from './kind';
+import { KindPostService } from './kind/post';
 
 async function run() {
   try {
-    const cfg: KindConfig = getKindConfig();
-    await cfg.exportClusterLogs();
-    await cfg.deleteCluster();
+    const service: KindPostService = KindPostService.getInstance();
+    await service.exportClusterLogs();
+    await service.deleteCluster();
   } catch (error) {
     core.setFailed((error as Error).message);
   }
