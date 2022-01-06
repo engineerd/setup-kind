@@ -5,6 +5,7 @@ inputs:
   version:
     description: "Version of Kind to use (default v0.11.1)"
     default: "v0.11.1"
+    required: true
   config:
     description: "Path (relative to the root of the repository) to a kind config file"
   image:
@@ -12,11 +13,12 @@ inputs:
   name:
     description: "Cluster name (default kind)"
     default: "kind"
+    required: true
   wait:
     description: "Wait for control plane node to be ready (default 300s)"
     default: "300s"
   kubeconfig:
-    description: "sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config"
+    description: "Sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config"
   skipClusterCreation:
     description: "If true, the action will not create a cluster, just acquire the tools"
     default: "false"

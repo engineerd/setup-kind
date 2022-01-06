@@ -20,11 +20,11 @@ export class KindMainService {
   quiet: boolean;
 
   private constructor() {
-    this.version = core.getInput(Input.Version);
+    this.version = core.getInput(Input.Version, { required: true });
     this.configFile = core.getInput(Input.Config);
     this.image = core.getInput(Input.Image);
     this.checkImage();
-    this.name = core.getInput(Input.Name);
+    this.name = core.getInput(Input.Name, { required: true });
     this.waitDuration = core.getInput(Input.Wait);
     this.kubeConfigFile = core.getInput(Input.KubeConfig);
     this.skipClusterCreation =
