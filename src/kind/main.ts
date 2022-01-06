@@ -23,6 +23,7 @@ export class KindMainService {
     this.version = core.getInput(Input.Version);
     this.configFile = core.getInput(Input.Config);
     this.image = core.getInput(Input.Image);
+    this.checkImage();
     this.name = core.getInput(Input.Name);
     this.waitDuration = core.getInput(Input.Wait);
     this.kubeConfigFile = core.getInput(Input.KubeConfig);
@@ -34,6 +35,22 @@ export class KindMainService {
 
   public static getInstance(): KindMainService {
     return new KindMainService();
+  }
+
+  /**
+   * Prints a warning if a kindest/node is used without sha256.
+   * This follows https://kind.sigs.k8s.io/docs/user/working-offline/#using-a-prebuilt-node-imagenode-image recommendation
+   */
+  private checkImage() {
+    if (
+      this.image !== '' &&
+      this.image.startsWith('kindest/node') &&
+      !this.image.includes('@sha256:')
+    ) {
+      core.warning(
+        `Please include the @sha256: image digest from the image in the release notes. You can find available image tags on the release page, https://github.com/kubernetes-sigs/kind/releases/tag/${this.version}`
+      );
+    }
   }
 
   // returns the arguments to pass to `kind create cluster`

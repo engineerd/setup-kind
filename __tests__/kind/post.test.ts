@@ -5,7 +5,6 @@ import { KindPostService } from '../../src/kind/post';
 const testEnvVars = {
   INPUT_VERBOSITY: '3',
   INPUT_QUIET: 'true',
-  INPUT_CONFIG: 'some-path',
   INPUT_NAME: 'some-name',
   INPUT_KUBECONFIG: 'some-kubeconfig-path',
   GITHUB_WORKSPACE: '/home/runner/repo',
@@ -27,13 +26,12 @@ describe('checking input parsing', function () {
 
   it('correctly parse input', () => {
     const service: KindPostService = KindPostService.getInstance();
-    expect(service.configFile).toEqual(testEnvVars.INPUT_CONFIG);
     expect(service.kubeConfigFile).toEqual(testEnvVars.INPUT_KUBECONFIG);
     expect(service.skipClusterDeletion).toEqual(false);
     expect(service.skipClusterLogsExport).toEqual(false);
   });
 
-  it('correctly set skipClusterCreation', () => {
+  it('correctly set skipClusterDeletion', () => {
     process.env['INPUT_SKIPCLUSTERDELETION'] = 'true';
     const service: KindPostService = KindPostService.getInstance();
     expect(service.skipClusterDeletion).toEqual(true);

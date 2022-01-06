@@ -7,7 +7,6 @@ import { Input, Flag, KIND_TOOL_NAME } from '../constants';
 import { executeKindCommand } from './core';
 
 export class KindPostService {
-  configFile: string;
   name: string;
   kubeConfigFile: string;
   skipClusterDeletion: boolean;
@@ -16,7 +15,6 @@ export class KindPostService {
   quiet: boolean;
 
   private constructor() {
-    this.configFile = core.getInput(Input.Config);
     this.name = core.getInput(Input.Name);
     this.kubeConfigFile = core.getInput(Input.KubeConfig);
     this.skipClusterDeletion =
