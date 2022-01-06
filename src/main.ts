@@ -18,9 +18,10 @@ async function run() {
 function checkEnvironment() {
   const supportedPlatforms: string[] = ['linux/amd64', 'linux/arm64'];
   const platform = `${go.goos()}/${go.goarch()}`;
-  if (!supportedPlatforms.includes(platform)) {
-    throw new Error(`Platform "${platform}" is not supported`);
-  }
+  ok(
+    supportedPlatforms.includes(platform),
+    `Platform "${platform}" is not supported`
+  );
   const requiredVariables = [
     'GITHUB_WORKSPACE',
     'RUNNER_ARCH',
