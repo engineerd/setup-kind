@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as io from '@actions/io';
 import { ok } from 'assert';
 import * as go from './go';
 import { KindMainService } from './kind/main';
@@ -31,6 +32,8 @@ function checkEnvironment() {
   requiredVariables.forEach((variable) => {
     ok(`${process.env[variable]}`, `Expected ${variable} to be defined`);
   });
+  const docker = io.which('docker', false);
+  ok(docker, 'Docker is required for kind use');
 }
 
 run();

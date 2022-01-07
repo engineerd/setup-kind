@@ -1,12 +1,14 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
+import { ok } from 'assert';
 import path from 'path';
 import process from 'process';
-import * as go from '../go';
+import * as semver from 'semver';
 import * as cache from '../cache';
-import { Input, Flag, KIND_TOOL_NAME } from '../constants';
-import { kindCommand, executeKindCommand } from './core';
+import { Flag, Input, KIND_TOOL_NAME } from '../constants';
+import * as go from '../go';
+import { executeKindCommand, kindCommand } from './core';
 
 export class KindMainService {
   version: string;
@@ -21,6 +23,7 @@ export class KindMainService {
 
   private constructor() {
     this.version = core.getInput(Input.Version, { required: true });
+    this.checkVersion();
     this.configFile = core.getInput(Input.Config);
     this.image = core.getInput(Input.Image);
     this.checkImage();
@@ -35,6 +38,14 @@ export class KindMainService {
 
   public static getInstance(): KindMainService {
     return new KindMainService();
+  }
+
+  private checkVersion() {
+    const cleanVersion = semver.clean(this.version);
+    ok(
+      cleanVersion,
+      `Input ${Input.Version} expects a valid version like v0.11.1`
+    );
   }
 
   /**
@@ -104,11 +115,11 @@ export class KindMainService {
   }
 
   async installKind(): Promise<string> {
-    const primaryKey = await cache.restoreKindCache(this.version);
+    const parameters = await cache.restoreKindCache(this.version);
     let toolPath: string = tc.find(KIND_TOOL_NAME, this.version);
     if (toolPath === '') {
       toolPath = await this.downloadKind();
-      await cache.saveKindCache(primaryKey);
+      await cache.saveKindCache(parameters);
     }
     return toolPath;
   }
