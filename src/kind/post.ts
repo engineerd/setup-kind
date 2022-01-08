@@ -72,7 +72,10 @@ export class KindPostService {
   }
 
   private artifactName(): string {
-    const artifactArgs: string[] = [KIND_TOOL_NAME];
+    const artifactArgs: string[] = [
+      `${process.env['GITHUB_JOB']}`,
+      KIND_TOOL_NAME,
+    ];
     if (this.name != '') {
       artifactArgs.push(this.name);
     }

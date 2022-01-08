@@ -24,6 +24,7 @@ function checkEnvironment() {
     `Platform "${platform}" is not supported`
   );
   const requiredVariables = [
+    'GITHUB_JOB',
     'GITHUB_WORKSPACE',
     'RUNNER_ARCH',
     'RUNNER_OS',
