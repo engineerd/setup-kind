@@ -24,3 +24,5 @@ export enum Flag {
 }
 
 export const KIND_TOOL_NAME = 'kind';
+
+export const KIND_DEFAULT_VERSION = 'v0.11.1';

@@ -6,9 +6,14 @@ import path from 'path';
 import process from 'process';
 import * as semver from 'semver';
 import * as cache from '../cache';
-import { Flag, Input, KIND_TOOL_NAME } from '../constants';
+import {
+  Flag,
+  Input,
+  KIND_DEFAULT_VERSION,
+  KIND_TOOL_NAME,
+} from '../constants';
 import * as go from '../go';
-import { executeKindCommand, kindCommand } from './core';
+import { executeKindCommand, KIND_COMMAND } from './core';
 
 export class KindMainService {
   version: string;
@@ -40,17 +45,25 @@ export class KindMainService {
     return new KindMainService();
   }
 
+  /**
+   * Verify that the version of kind is a valid semver and prints a warning if the kind version used is older than the default for setup-kind
+   */
   private checkVersion() {
     const cleanVersion = semver.clean(this.version);
     ok(
       cleanVersion,
-      `Input ${Input.Version} expects a valid version like v0.11.1`
+      `Input ${Input.Version} expects a valid version like ${KIND_DEFAULT_VERSION}`
     );
+    if (semver.lt(this.version, KIND_DEFAULT_VERSION)) {
+      core.warning(
+        `Kind ${KIND_DEFAULT_VERSION} is available, have you considered using it ? See https://github.com/kubernetes-sigs/kind/releases/tag/${KIND_DEFAULT_VERSION}`
+      );
+    }
   }
 
   /**
    * Prints a warning if a kindest/node is used without sha256.
-   * This follows https://kind.sigs.k8s.io/docs/user/working-offline/#using-a-prebuilt-node-imagenode-image recommendation
+   * This follows the recommendation from https://kind.sigs.k8s.io/docs/user/working-offline/#using-a-prebuilt-node-imagenode-image
    */
   private checkImage() {
     if (
@@ -106,7 +119,7 @@ export class KindMainService {
     }
     const toolPath: string = await tc.cacheFile(
       downloadPath,
-      kindCommand(),
+      KIND_COMMAND,
       KIND_TOOL_NAME,
       this.version
     );
