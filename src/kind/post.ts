@@ -1,8 +1,9 @@
 import * as artifact from '@actions/artifact';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
-import os from 'os';
 import path from 'path';
+import process from 'process';
+import { v5 as uuidv5 } from 'uuid';
 import { Flag, Input, KIND_TOOL_NAME } from '../constants';
 import { executeKindCommand } from './core';
 
@@ -68,7 +69,10 @@ export class KindPostService {
       dirs.push(this.name);
     }
     dirs.push('logs');
-    return path.join(os.tmpdir(), ...dirs);
+    return path.join(
+      `${process.env['RUNNER_TEMP']}`,
+      uuidv5(dirs.join('/'), uuidv5.URL)
+    );
   }
 
   private artifactName(): string {

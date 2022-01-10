@@ -28,6 +28,7 @@ function checkEnvironment() {
     'GITHUB_WORKSPACE',
     'RUNNER_ARCH',
     'RUNNER_OS',
+    'RUNNER_TEMP',
     'RUNNER_TOOL_CACHE',
   ];
   requiredVariables.forEach((variable) => {

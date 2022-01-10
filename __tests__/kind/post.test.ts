@@ -1,4 +1,3 @@
-import os from 'os';
 import path from 'path';
 import { KindPostService } from '../../src/kind/post';
 
@@ -7,7 +6,8 @@ const testEnvVars = {
   INPUT_QUIET: 'true',
   INPUT_NAME: 'some-name',
   INPUT_KUBECONFIG: 'some-kubeconfig-path',
-  GITHUB_WORKSPACE: '/home/runner/repo',
+  GITHUB_JOB: 'kind',
+  RUNNER_TEMP: '/home/runner/work/_temp/',
 };
 
 describe('checking input parsing', function () {
@@ -58,7 +58,9 @@ describe('checking input parsing', function () {
     expect(args).toEqual([
       'export',
       'logs',
-      path.join(os.tmpdir(), 'kind/some-name/logs'),
+      path.normalize(
+        '/home/runner/work/_temp/1c1900ec-8f4f-5069-a966-1d3072cc9723'
+      ),
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',
