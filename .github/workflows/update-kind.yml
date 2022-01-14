@@ -1,0 +1,35 @@
+name: Update KinD default version
+on:
+  schedule:
+    - cron: '0 7 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install yq
+        run: make install/yq
+
+      - name: Update KinD
+        id: update-kind
+        run: make update/kind
+
+      - name: Create Pull Request
+        if: ${{ steps.update-kind.outputs.changed }}
+        uses: peter-evans/create-pull-request@v3
+        with:
+          author: 'Radu Matei <radu.matei@fermyon.com>'
+          body: |
+            ${{ steps.update-kind.outputs.body }}
+          branch: '${{ steps.update-kind.outputs.branch }}'
+          commit-message: '${{ steps.update-kind.outputs.commit-message }}'
+          committer: 'Radu Matei <radu.matei@fermyon.com>'
+          delete-branch: true
+          labels: 'dependencies,go'
+          reviewers: 'radu-matei'
+          signoff: true
+          title: '${{ steps.update-kind.outputs.title }}'
+          token: ${{ secrets.GITHUB_TOKEN }}
