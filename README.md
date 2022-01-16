@@ -7,7 +7,7 @@ GitHub Action!
 > versions lower than v0.5.0 will no longer work properly. See [this
 > issue][path-issue] for more details.
 
-> This action assumes a Linux environment (amd64 or arm64 architectures), and will _not_ work on Windows or
+> This action assumes a Linux environment (amd64 or arm64 architecture), and will _not_ work on Windows or
 > MacOS agents.
 
 ```yaml
