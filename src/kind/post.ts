@@ -1,13 +1,13 @@
 import * as artifact from '@actions/artifact';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
-import os from 'os';
 import path from 'path';
-import { Input, Flag } from '../constants';
+import process from 'process';
+import { v5 as uuidv5 } from 'uuid';
+import { Flag, Input, KIND_TOOL_NAME } from '../constants';
 import { executeKindCommand } from './core';
 
 export class KindPostService {
-  configFile: string;
   name: string;
   kubeConfigFile: string;
   skipClusterDeletion: boolean;
@@ -16,7 +16,6 @@ export class KindPostService {
   quiet: boolean;
 
   private constructor() {
-    this.configFile = core.getInput(Input.Config);
     this.name = core.getInput(Input.Name);
     this.kubeConfigFile = core.getInput(Input.KubeConfig);
     this.skipClusterDeletion =
@@ -65,16 +64,22 @@ export class KindPostService {
   }
 
   private kindLogsDir(): string {
-    const dirs: string[] = ['kind'];
+    const dirs: string[] = [KIND_TOOL_NAME];
     if (this.name != '') {
       dirs.push(this.name);
     }
     dirs.push('logs');
-    return path.join(os.tmpdir(), ...dirs);
+    return path.join(
+      `${process.env['RUNNER_TEMP']}`,
+      uuidv5(dirs.join('/'), uuidv5.URL)
+    );
   }
 
   private artifactName(): string {
-    const artifactArgs: string[] = ['kind'];
+    const artifactArgs: string[] = [
+      `${process.env['GITHUB_JOB']}`,
+      KIND_TOOL_NAME,
+    ];
     if (this.name != '') {
       artifactArgs.push(this.name);
     }
