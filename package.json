@@ -6,8 +6,8 @@
   "main": "lib/main.js",
   "scripts": {
     "build": "npm run build:main && npm run build:post",
-    "build:main": "ncc build --minify -o dist/main src/main.ts",
-    "build:post": "ncc build --minify -o dist/post src/post.ts",
+    "build:main": "ncc build --minify --source-map --license license.txt -o dist/main src/main.ts",
+    "build:post": "ncc build --minify --source-map --license license.txt -o dist/post src/post.ts",
     "lint": "eslint . --ext .ts,.json",
     "lint:fix": "npm run lint --fix",
     "pre-commit": "lint-staged",
