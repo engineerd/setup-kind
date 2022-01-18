@@ -12,7 +12,7 @@ import {
   KIND_DEFAULT_VERSION,
   KIND_TOOL_NAME,
 } from '../constants';
-import * as go from '../go';
+import { env as goenv } from '../go';
 import { executeKindCommand, KIND_COMMAND } from './core';
 
 export class KindMainService {
@@ -109,9 +109,7 @@ export class KindMainService {
 
   // this action should always be run from a Linux worker
   private async downloadKind(): Promise<string> {
-    const url = `https://github.com/kubernetes-sigs/kind/releases/download/${
-      this.version
-    }/kind-${go.goos()}-${go.goarch()}`;
+    const url = `https://github.com/kubernetes-sigs/kind/releases/download/${this.version}/kind-${goenv.GOOS}-${goenv.GOARCH}`;
     console.log('downloading kind from ' + url);
     const downloadPath = await tc.downloadTool(url);
     if (process.platform !== 'win32') {

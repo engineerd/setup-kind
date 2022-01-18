@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as io from '@actions/io';
 import { ok } from 'assert';
-import * as go from './go';
+import { env as goenv } from './go';
 import { KindMainService } from './kind/main';
 
 async function run() {
@@ -18,7 +18,7 @@ async function run() {
 
 function checkEnvironment() {
   const supportedPlatforms: string[] = ['linux/amd64', 'linux/arm64'];
-  const platform = `${go.goos()}/${go.goarch()}`;
+  const platform = `${goenv.GOOS}/${goenv.GOARCH}`;
   ok(
     supportedPlatforms.includes(platform),
     `Platform "${platform}" is not supported`
