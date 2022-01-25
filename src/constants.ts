@@ -5,6 +5,7 @@ export enum Input {
   Config = 'config',
   Image = 'image',
   Name = 'name',
+  Token = 'token',
   Wait = 'wait',
   KubeConfig = 'kubeconfig',
   SkipClusterCreation = 'skipClusterCreation',

@@ -35,6 +35,7 @@
     "@actions/cache": "^1.0.8",
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
+    "@actions/github": "^5.0.0",
     "@actions/glob": "^0.2.0",
     "@actions/io": "^1.1.1",
     "@actions/tool-cache": "^1.7.1",
