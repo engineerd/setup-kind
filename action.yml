@@ -34,6 +34,10 @@ inputs:
   quiet:
     description: "Silence all stderr output"
     default: "false"
+  token:
+    description: "Used to retrieve release informations concerning KinD"
+    default: "${{ github.token }}"
+    required: true
 runs:
   using: "node12"
   main: "dist/main/index.js"

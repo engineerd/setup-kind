@@ -4,7 +4,6 @@ import { KindMainService } from '../../src/kind/main';
 const testEnvVars = {
   INPUT_VERBOSITY: '3',
   INPUT_QUIET: 'true',
-  INPUT_VERSION: 'v0.5.3',
   INPUT_CONFIG: 'some-path',
   INPUT_IMAGE: 'some-docker-image',
   INPUT_NAME: 'some-name',
@@ -30,7 +29,6 @@ describe('checking input parsing', function () {
 
   it('correctly parse input', () => {
     const service: KindMainService = KindMainService.getInstance();
-    expect(service.version).toEqual(testEnvVars.INPUT_VERSION);
     expect(service.configFile).toEqual(testEnvVars.INPUT_CONFIG);
     expect(service.image).toEqual(testEnvVars.INPUT_IMAGE);
     expect(service.name).toEqual(testEnvVars.INPUT_NAME);

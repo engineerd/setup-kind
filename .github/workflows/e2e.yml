@@ -1,4 +1,4 @@
-name: "Create cluster using KinD"
+name: 'Create cluster using KinD'
 on: [pull_request, push]
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
 
       - run: npm run build
 
-      - name: "Run engineerd/setup-kind@${{github.sha}}"
+      - name: 'Run engineerd/setup-kind@${{github.sha}}'
         uses: ./
 
       - run: kubectl cluster-info
