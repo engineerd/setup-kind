@@ -45,7 +45,6 @@ describe('checking input parsing', function () {
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',
-      testEnvVars.INPUT_QUIET,
       '--name',
       testEnvVars.INPUT_NAME,
       '--kubeconfig',
@@ -64,7 +63,6 @@ describe('checking input parsing', function () {
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',
-      testEnvVars.INPUT_QUIET,
       '--name',
       testEnvVars.INPUT_NAME,
     ]);
