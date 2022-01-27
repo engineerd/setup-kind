@@ -41,7 +41,7 @@ export class KindMainService {
       args.push(Flag.Verbosity, this.verbosity.toString());
     }
     if (this.quiet) {
-      args.push(Flag.Quiet, this.quiet.toString());
+      args.push(Flag.Quiet);
     }
     if (this.configFile != '') {
       args.push(

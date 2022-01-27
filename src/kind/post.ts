@@ -37,7 +37,7 @@ export class KindPostService {
       args.push(Flag.Verbosity, this.verbosity.toString());
     }
     if (this.quiet) {
-      args.push(Flag.Quiet, this.quiet.toString());
+      args.push(Flag.Quiet);
     }
     if (this.name != '') {
       args.push(Flag.Name, this.name);
@@ -55,7 +55,7 @@ export class KindPostService {
       args.push(Flag.Verbosity, this.verbosity.toString());
     }
     if (this.quiet) {
-      args.push(Flag.Quiet, this.quiet.toString());
+      args.push(Flag.Quiet);
     }
     if (this.name != '') {
       args.push(Flag.Name, this.name);

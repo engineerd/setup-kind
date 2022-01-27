@@ -51,7 +51,6 @@ describe('checking input parsing', function () {
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',
-      testEnvVars.INPUT_QUIET,
       '--config',
       path.normalize('/home/runner/repo/some-path'),
       '--image',
