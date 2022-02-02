@@ -63,6 +63,7 @@ async function getReleaseByInputVersion(inputVersion: string) {
       version: data.tag_name,
     };
   } else {
+    checkVersion(inputVersion);
     const { data } = await octokit.rest.repos.getReleaseByTag({
       owner: KUBERNETES_SIGS,
       repo: KIND,
@@ -82,7 +83,6 @@ async function getReleaseByInputVersion(inputVersion: string) {
 async function findVersionAndSupportedPlatforms() {
   const inputVersion = core.getInput(Input.Version, { required: true });
   const { assets, version } = await getReleaseByInputVersion(inputVersion);
-  checkVersion(version);
   const platforms: string[] = assets.map((asset) => {
     const parts = asset.name.split('-');
     return `${parts[1]}/${parts[2]}`;
