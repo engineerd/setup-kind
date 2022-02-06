@@ -9,11 +9,11 @@ import { env as goenv } from './go';
 export async function checkEnvironment() {
   checkVariables();
   await checkDocker();
-  const { platform, version } = await checkPlatform();
+  const { platform, url, version } = await checkPlatform();
   const image = core.getInput(Input.Image);
   checkImageForPlatform(image, platform);
   checkImageForVersion(image, version);
-  return version;
+  return { version, url };
 }
 
 /**
@@ -22,9 +22,9 @@ export async function checkEnvironment() {
  */
 async function checkPlatform() {
   const platform = `${goenv.GOOS}/${goenv.GOARCH}`;
-  const version = await ensureKindSupportsPlatform(platform);
+  const { version, url } = await ensureKindSupportsPlatform(platform);
   await ensureSetupKindSupportsPlatform(platform);
-  return { platform, version };
+  return { platform, url, version };
 }
 
 /**
@@ -33,12 +33,17 @@ async function checkPlatform() {
 async function ensureKindSupportsPlatform(platform: string) {
   const { platforms, version } = await findVersionAndSupportedPlatforms();
   ok(
-    platforms.includes(platform),
-    `sigs.k8s.io/kind@${version} doesn't support platform ${platform} but ${platforms.join(
-      ' and '
-    )}`
+    platforms[platform],
+    `sigs.k8s.io/kind@${version} doesn't support platform ${platform} but ${Object.getOwnPropertyNames(
+      platforms
+    )
+      .sort()
+      .join(' and ')}`
   );
-  return version;
+  return {
+    version: version,
+    url: platforms[platform],
+  };
 }
 
 /**
@@ -49,7 +54,7 @@ async function ensureKindSupportsPlatform(platform: string) {
 async function getReleaseByInputVersion(inputVersion: string) {
   const token = core.getInput(Input.Token, { required: true });
   const octokit = github.getOctokit(token, {
-    userAgent: 'engineerd/setup-kind',
+    userAgent: `engineerd/setup-kind@${process.env['npm_package_version']}`,
   });
   const KUBERNETES_SIGS = 'kubernetes-sigs';
   const KIND = 'kind';
@@ -83,10 +88,17 @@ async function getReleaseByInputVersion(inputVersion: string) {
 async function findVersionAndSupportedPlatforms() {
   const inputVersion = core.getInput(Input.Version, { required: true });
   const { assets, version } = await getReleaseByInputVersion(inputVersion);
-  const platforms: string[] = assets.map((asset) => {
-    const parts = asset.name.split('-');
-    return `${parts[1]}/${parts[2]}`;
-  });
+  const platforms = assets.reduce(
+    (
+      total: { [key: string]: string },
+      asset: { name: string; browser_download_url: string }
+    ) => {
+      const parts = asset.name.split('-');
+      total[`${parts[1]}/${parts[2]}`] = asset.browser_download_url;
+      return total;
+    },
+    {}
+  );
   return { platforms, version };
 }
 
@@ -98,9 +110,9 @@ function ensureSetupKindSupportsPlatform(platform: string) {
   const platforms: string[] = ['linux/amd64', 'linux/arm64'];
   if (!platforms.includes(platform)) {
     core.warning(
-      `engineerd/setup-kind doesn't support platform ${platform} but ${platforms.join(
-        ' and '
-      )}`
+      `engineerd/setup-kind@${
+        process.env['npm_package_version']
+      } doesn't support platform ${platform} but ${platforms.join(' and ')}`
     );
   }
 }

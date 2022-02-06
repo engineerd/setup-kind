@@ -4,9 +4,9 @@ import { checkEnvironment } from './requirements';
 
 async function run() {
   try {
-    const version = await checkEnvironment();
+    const { version, url } = await checkEnvironment();
     const service: KindMainService = KindMainService.getInstance();
-    const toolPath: string = await service.installKind(version);
+    const toolPath: string = await service.installKind(version, url);
     core.addPath(toolPath);
     await service.createCluster();
   } catch (error) {

@@ -5,7 +5,6 @@ import path from 'path';
 import process from 'process';
 import * as cache from '../cache';
 import { Flag, Input, KIND_TOOL_NAME } from '../constants';
-import { env as goenv } from '../go';
 import { executeKindCommand, KIND_COMMAND } from './core';
 
 export class KindMainService {
@@ -64,9 +63,7 @@ export class KindMainService {
     return args;
   }
 
-  // this action should always be run from a Linux worker
-  private async downloadKind(version: string): Promise<string> {
-    const url = `https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-${goenv.GOOS}-${goenv.GOARCH}`;
+  private async downloadKind(version: string, url: string): Promise<string> {
     console.log('downloading kind from ' + url);
     const downloadPath = await tc.downloadTool(url);
     if (process.platform !== 'win32') {
@@ -82,11 +79,11 @@ export class KindMainService {
     return toolPath;
   }
 
-  async installKind(version: string): Promise<string> {
+  async installKind(version: string, url: string): Promise<string> {
     const parameters = await cache.restoreKindCache(version);
     let toolPath: string = tc.find(KIND_TOOL_NAME, version);
     if (toolPath === '') {
-      toolPath = await this.downloadKind(version);
+      toolPath = await this.downloadKind(version, url);
       await cache.saveKindCache(parameters);
     }
     return toolPath;
