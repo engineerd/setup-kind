@@ -63,7 +63,6 @@ export class KindMainService {
     return args;
   }
 
-  // this action should always be run from a Linux worker
   private async downloadKind(version: string, url: string): Promise<string> {
     console.log('downloading kind from ' + url);
     const downloadPath = await tc.downloadTool(url);
