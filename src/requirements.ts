@@ -54,7 +54,7 @@ async function ensureKindSupportsPlatform(platform: string) {
 async function getReleaseByInputVersion(inputVersion: string) {
   const token = core.getInput(Input.Token, { required: true });
   const octokit = github.getOctokit(token, {
-    userAgent: `engineerd/setup-kind@${process.env['npm_package_version']}`,
+    userAgent: 'engineerd/setup-kind',
   });
   const KUBERNETES_SIGS = 'kubernetes-sigs';
   const KIND = 'kind';
@@ -110,9 +110,9 @@ function ensureSetupKindSupportsPlatform(platform: string) {
   const platforms: string[] = ['linux/amd64', 'linux/arm64'];
   if (!platforms.includes(platform)) {
     core.warning(
-      `engineerd/setup-kind@${
-        process.env['npm_package_version']
-      } doesn't support platform ${platform} but ${platforms.join(' and ')}`
+      `engineerd/setup-kind doesn't support platform ${platform} but ${platforms.join(
+        ' and '
+      )}`
     );
   }
 }
