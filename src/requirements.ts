@@ -34,11 +34,15 @@ async function getKubectl(image: string, platform: string) {
   };
 }
 
-async function checkKubernetesVersion(version: string) {
+function getOctokit() {
   const token = core.getInput(Input.Token, { required: true });
-  const octokit = github.getOctokit(token, {
+  return github.getOctokit(token, {
     userAgent: 'engineerd/setup-kind',
   });
+}
+
+async function checkKubernetesVersion(version: string) {
+  const octokit = getOctokit();
   const { status } = await octokit.rest.repos.getReleaseByTag({
     owner: 'kubernetes',
     repo: 'kubernetes',
@@ -89,10 +93,7 @@ async function ensureKindSupportsPlatform(platform: string) {
  * @returns
  */
 async function getReleaseByInputVersion(inputVersion: string) {
-  const token = core.getInput(Input.Token, { required: true });
-  const octokit = github.getOctokit(token, {
-    userAgent: 'engineerd/setup-kind',
-  });
+  const octokit = getOctokit();
   const KUBERNETES_SIGS = 'kubernetes-sigs';
   const KIND = 'kind';
   if (inputVersion === 'latest') {
