@@ -3,17 +3,48 @@ import * as github from '@actions/github';
 import * as io from '@actions/io';
 import { ok } from 'assert';
 import * as semver from 'semver';
-import { Input, KIND_DEFAULT_VERSION } from './constants';
+import { Input, KIND_DEFAULT_VERSION, KUBECTL_COMMAND } from './constants';
 import { env as goenv } from './go';
 
 export async function checkEnvironment() {
   checkVariables();
   await checkDocker();
-  const { platform, url, version } = await checkPlatform();
+  const { platform, kind } = await checkPlatform();
   const image = core.getInput(Input.Image);
   checkImageForPlatform(image, platform);
-  checkImageForVersion(image, version);
-  return { version, url };
+  checkImageForVersion(image, kind.version);
+  const kubectl = await getKubectl(image, platform);
+  return {
+    kind,
+    kubectl,
+  };
+}
+
+async function getKubectl(image: string, platform: string) {
+  let version = '';
+  let url = '';
+  if (image !== '' && image.startsWith('kindest/node')) {
+    version = image.split('@')[0].split(':')[1];
+    await checkKubernetesVersion(version);
+    url = `https://storage.googleapis.com/kubernetes-release/release/${version}/bin/${platform}/${KUBECTL_COMMAND}`;
+  }
+  return {
+    version,
+    url,
+  };
+}
+
+async function checkKubernetesVersion(version: string) {
+  const token = core.getInput(Input.Token, { required: true });
+  const octokit = github.getOctokit(token, {
+    userAgent: 'engineerd/setup-kind',
+  });
+  const { status } = await octokit.rest.repos.getReleaseByTag({
+    owner: 'kubernetes',
+    repo: 'kubernetes',
+    tag: version,
+  });
+  ok(status === 200, `Kubernetes ${version} doesn't exists`);
 }
 
 /**
@@ -24,7 +55,13 @@ async function checkPlatform() {
   const platform = `${goenv.GOOS}/${goenv.GOARCH}`;
   const { version, url } = await ensureKindSupportsPlatform(platform);
   await ensureSetupKindSupportsPlatform(platform);
-  return { platform, url, version };
+  return {
+    platform,
+    kind: {
+      url: url,
+      version: version,
+    },
+  };
 }
 
 /**

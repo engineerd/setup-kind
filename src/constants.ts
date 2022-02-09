@@ -24,6 +24,10 @@ export enum Flag {
   KubeConfig = '--kubeconfig',
 }
 
+export const KIND_COMMAND = process.platform === 'win32' ? 'kind.exe' : 'kind';
+export const KIND_DEFAULT_VERSION = 'v0.11.1';
 export const KIND_TOOL_NAME = 'kind';
 
-export const KIND_DEFAULT_VERSION = 'v0.11.1';
+export const KUBECTL_COMMAND =
+  process.platform === 'win32' ? 'kubectl.exe' : 'kubectl';
+export const KUBECTL_TOOL_NAME = 'kubectl';

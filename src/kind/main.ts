@@ -1,11 +1,8 @@
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import * as tc from '@actions/tool-cache';
 import path from 'path';
 import process from 'process';
-import * as cache from '../cache';
-import { Flag, Input, KIND_TOOL_NAME } from '../constants';
-import { executeKindCommand, KIND_COMMAND } from './core';
+import { Flag, Input } from '../constants';
+import { executeKindCommand } from './core';
 
 export class KindMainService {
   configFile: string;
@@ -61,32 +58,6 @@ export class KindMainService {
       args.push(Flag.KubeConfig, this.kubeConfigFile);
     }
     return args;
-  }
-
-  private async downloadKind(version: string, url: string): Promise<string> {
-    console.log('downloading kind from ' + url);
-    const downloadPath = await tc.downloadTool(url);
-    if (process.platform !== 'win32') {
-      await exec.exec('chmod', ['+x', downloadPath]);
-    }
-    const toolPath: string = await tc.cacheFile(
-      downloadPath,
-      KIND_COMMAND,
-      KIND_TOOL_NAME,
-      version
-    );
-    core.debug(`kind is cached under ${toolPath}`);
-    return toolPath;
-  }
-
-  async installKind(version: string, url: string): Promise<string> {
-    const parameters = await cache.restoreKindCache(version);
-    let toolPath: string = tc.find(KIND_TOOL_NAME, version);
-    if (toolPath === '') {
-      toolPath = await this.downloadKind(version, url);
-      await cache.saveKindCache(parameters);
-    }
-    return toolPath;
   }
 
   async createCluster() {
