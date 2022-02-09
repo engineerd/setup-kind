@@ -34,8 +34,12 @@ export async function installTools(
 async function installKind(version: string, url: string) {
   return await installTool(KIND_COMMAND, KIND_TOOL_NAME, version, url);
 }
+
 async function installKubectl(version: string, url: string) {
-  return await installTool(KUBECTL_COMMAND, KUBECTL_TOOL_NAME, version, url);
+  if (version !== '' && url !== '') {
+    return await installTool(KUBECTL_COMMAND, KUBECTL_TOOL_NAME, version, url);
+  }
+  return false;
 }
 
 async function downloadTool(
