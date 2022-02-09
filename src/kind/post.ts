@@ -70,14 +70,14 @@ export class KindPostService {
     }
     dirs.push('logs');
     return path.join(
-      `${process.env['RUNNER_TEMP']}`,
+      `${process.env['RUNNER_TEMP'] || ''}`,
       uuidv5(dirs.join('/'), uuidv5.URL)
     );
   }
 
   private artifactName(): string {
     const artifactArgs: string[] = [
-      `${process.env['GITHUB_JOB']}`,
+      `${process.env['GITHUB_JOB'] || ''}`,
       KIND_TOOL_NAME,
     ];
     if (this.name != '') {

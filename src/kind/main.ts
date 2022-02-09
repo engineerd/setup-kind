@@ -42,7 +42,7 @@ export class KindMainService {
     if (this.configFile != '') {
       args.push(
         Flag.Config,
-        path.join(`${process.env['GITHUB_WORKSPACE']}`, this.configFile)
+        path.join(`${process.env['GITHUB_WORKSPACE'] || ''}`, this.configFile)
       );
     }
     if (this.image != '') {

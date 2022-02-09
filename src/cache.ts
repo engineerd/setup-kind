@@ -9,7 +9,9 @@ import { KIND_TOOL_NAME, KUBECTL_TOOL_NAME } from './constants';
 /**
  *  Prefix of the kind cache key
  */
-const KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-setup-kind-`;
+const KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS'] || ''}-${
+  process.env['RUNNER_ARCH'] || ''
+}-setup-kind-`;
 
 /**
  * Restores Kind by version, $RUNNER_OS and $RUNNER_ARCH
@@ -46,7 +48,7 @@ export async function restoreSetupKindCache(
 function setupKindCachePaths(kind_version: string, kubectl_version: string) {
   const paths = [
     path.join(
-      `${process.env['RUNNER_TOOL_CACHE']}`,
+      `${process.env['RUNNER_TOOL_CACHE'] || ''}`,
       KIND_TOOL_NAME,
       semver.clean(kind_version) || kind_version
     ),
@@ -54,7 +56,7 @@ function setupKindCachePaths(kind_version: string, kubectl_version: string) {
   if (kubectl_version !== '') {
     paths.push(
       path.join(
-        `${process.env['RUNNER_TOOL_CACHE']}`,
+        `${process.env['RUNNER_TOOL_CACHE'] || ''}`,
         KUBECTL_TOOL_NAME,
         semver.clean(kubectl_version) || kubectl_version
       )

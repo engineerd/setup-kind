@@ -54,7 +54,7 @@ async function checkKubernetesVersion(version: string) {
 async function checkPlatform() {
   const platform = `${goenv.GOOS}/${goenv.GOARCH}`;
   const { version, url } = await ensureKindSupportsPlatform(platform);
-  await ensureSetupKindSupportsPlatform(platform);
+  ensureSetupKindSupportsPlatform(platform);
   return {
     platform,
     kind: {
@@ -166,7 +166,7 @@ function checkVariables() {
     'RUNNER_TEMP',
     'RUNNER_TOOL_CACHE',
   ].forEach((variable) => {
-    ok(`${process.env[variable]}`, `Expected ${variable} to be defined`);
+    ok(`${process.env[variable] || ''}`, `Expected ${variable} to be defined`);
   });
 }
 
