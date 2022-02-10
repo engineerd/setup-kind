@@ -22,11 +22,11 @@ export async function restoreSetupKindCache(
   kubectl_version: string
 ) {
   const primaryKey = setupKindPrimaryKey(kind_version, kubectl_version);
-  const cachePaths = setupKindCachePaths(kind_version, kubectl_version);
+  const paths = setupKindCachePaths(kind_version, kubectl_version);
 
   core.debug(`Primary key is ${primaryKey}`);
 
-  const matchedKey = await cache.restoreCache(cachePaths, primaryKey);
+  const matchedKey = await cache.restoreCache(paths, primaryKey);
 
   if (matchedKey) {
     core.info(`Cache setup-kind restored from key: ${matchedKey}`);
@@ -34,8 +34,8 @@ export async function restoreSetupKindCache(
     core.info('Cache setup-kind is not found');
   }
   return {
-    paths: cachePaths,
-    primaryKey: primaryKey,
+    paths,
+    primaryKey,
   };
 }
 /**

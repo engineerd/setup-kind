@@ -43,9 +43,10 @@ function getOctokit() {
 
 async function checkKubernetesVersion(version: string) {
   const octokit = getOctokit();
+  const KUBERNETES = 'kubernetes';
   const { status } = await octokit.rest.repos.getReleaseByTag({
-    owner: 'kubernetes',
-    repo: 'kubernetes',
+    owner: KUBERNETES,
+    repo: KUBERNETES,
     tag: version,
   });
   ok(status === 200, `Kubernetes ${version} doesn't exists`);
@@ -57,14 +58,11 @@ async function checkKubernetesVersion(version: string) {
  */
 async function checkPlatform() {
   const platform = `${goenv.GOOS}/${goenv.GOARCH}`;
-  const { version, url } = await ensureKindSupportsPlatform(platform);
+  const kind = await ensureKindSupportsPlatform(platform);
   ensureSetupKindSupportsPlatform(platform);
   return {
     platform,
-    kind: {
-      url: url,
-      version: version,
-    },
+    kind,
   };
 }
 

@@ -48,7 +48,7 @@ async function downloadTool(
   version: string,
   url: string
 ): Promise<string> {
-  console.log(`downloading ${toolName} from ${url}`);
+  core.info(`downloading ${toolName} from ${url}`);
   const downloadPath = await tc.downloadTool(url);
   if (process.platform !== 'win32') {
     await exec.exec('chmod', ['+x', downloadPath]);
