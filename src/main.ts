@@ -4,8 +4,8 @@ import { checkEnvironment } from './requirements';
 import { installTools } from './installer';
 
 async function run() {
-  const { kind, kubectl } = await checkEnvironment();
-  await installTools(kind, kubectl);
+  const { kind, kubernetes } = await checkEnvironment();
+  await installTools(kind, kubernetes);
   await KindMainService.getInstance().createCluster();
 }
 

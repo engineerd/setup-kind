@@ -35,7 +35,7 @@ inputs:
     description: "Silence all stderr output"
     default: "false"
   token:
-    description: "Used to retrieve release informations concerning KinD"
+    description: "Used to retrieve release informations concerning KinD and Kubernetes from https://api.github.com"
     default: "${{ github.token }}"
     required: true
 runs:

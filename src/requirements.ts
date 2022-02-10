@@ -2,36 +2,97 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as io from '@actions/io';
 import { ok } from 'assert';
+import fs from 'fs';
+import * as yaml from 'js-yaml';
+import path from 'path';
 import * as semver from 'semver';
-import { Input, KIND_DEFAULT_VERSION, KUBECTL_COMMAND } from './constants';
+import { Input, KIND_DEFAULT_VERSION } from './constants';
 import { env as goenv } from './go';
 
 export async function checkEnvironment() {
   checkVariables();
   await checkDocker();
   const { platform, kind } = await checkPlatform();
-  const image = core.getInput(Input.Image);
-  checkImageForPlatform(image, platform);
-  checkImageForVersion(image, kind.version);
-  const kubectl = await getKubectl(image, platform);
+  const kubernetes = await getKubernetes(platform, kind.version);
   return {
     kind,
-    kubectl,
+    kubernetes,
   };
 }
 
-async function getKubectl(image: string, platform: string) {
-  let version = '';
+interface Cluster {
+  kind?: string;
+  apiVersion?: string;
+  name?: string;
+  nodes?: Node[];
+  kubeadmConfigPatches?: string[];
+  containerdConfigPatches?: string[];
+}
+
+interface Node {
+  role?: string;
+  image?: string;
+  kubeadmConfigPatches?: string[];
+}
+
+async function getKubernetes(platform: string, kind_version: string) {
+  const image = core.getInput(Input.Image);
+  checkImageForPlatform(image, platform);
+  checkImageForVersion(image, kind_version, {});
+  let version = parseKubernetesVersion(image);
   let url = '';
-  if (image !== '' && image.startsWith('kindest/node')) {
-    version = image.split('@')[0].split(':')[1];
+
+  if (version === '') {
+    const kindConfig = core.getInput(Input.Config);
+    if (kindConfig !== '') {
+      version = parseKubernetesVersionFromConfig(kindConfig, kind_version);
+    }
+  }
+
+  if (version !== '') {
     await checkKubernetesVersion(version);
-    url = `https://storage.googleapis.com/kubernetes-release/release/${version}/bin/${platform}/${KUBECTL_COMMAND}`;
+    url = `https://storage.googleapis.com/kubernetes-release/release/${version}/bin/${platform}`;
   }
   return {
     version,
     url,
   };
+}
+
+function parseKubernetesVersionFromConfig(kindConfig: string, kind_version: string) {
+  let version = '';
+  const kindConfigPath = path.join(`${process.env['GITHUB_WORKSPACE'] || ''}`, kindConfig);
+  const doc = yaml.load(fs.readFileSync(kindConfigPath, 'utf8')) as Cluster;
+  ok(doc.kind === 'Cluster', `The config file ${kindConfig} must be of kind Cluster`);
+  if (doc.nodes) {
+    const versions: string[] = doc.nodes
+      .map((node) => {
+        const image = node.image || '';
+        checkImageForVersion(image, kind_version, { file: kindConfig });
+        return parseKubernetesVersion(image);
+      })
+      .filter((value, index, self) => value && self.indexOf(value) === index)
+      .sort()
+      .reverse();
+    if (versions.length >= 1) {
+      version = versions[0];
+      if (versions.length > 1) {
+        core.warning(
+          `There are multiple versions of Kubernetes, ${version} will be used to configure kubectl`,
+          { file: kindConfig }
+        );
+      }
+    }
+  }
+  return version;
+}
+
+function parseKubernetesVersion(image: string) {
+  let version = '';
+  if (image && image.startsWith('kindest/node')) {
+    version = image.split('@')[0].split(':')[1];
+  }
+  return version;
 }
 
 function getOctokit() {
@@ -125,10 +186,7 @@ async function findVersionAndSupportedPlatforms() {
   const inputVersion = core.getInput(Input.Version, { required: true });
   const { assets, version } = await getReleaseByInputVersion(inputVersion);
   const platforms = assets.reduce(
-    (
-      total: { [key: string]: string },
-      asset: { name: string; browser_download_url: string }
-    ) => {
+    (total: { [key: string]: string }, asset: { name: string; browser_download_url: string }) => {
       const parts = asset.name.split('-');
       total[`${parts[1]}/${parts[2]}`] = asset.browser_download_url;
       return total;
@@ -146,9 +204,7 @@ function ensureSetupKindSupportsPlatform(platform: string) {
   const platforms: string[] = ['linux/amd64', 'linux/arm64'];
   if (!platforms.includes(platform)) {
     core.warning(
-      `engineerd/setup-kind doesn't support platform ${platform} but ${platforms.join(
-        ' and '
-      )}`
+      `engineerd/setup-kind doesn't support platform ${platform} but ${platforms.join(' and ')}`
     );
   }
 }
@@ -208,14 +264,15 @@ function checkImageForPlatform(image: string, platform: string) {
  * Prints a warning if a kindest/node is used without sha256.
  * This follows the recommendation from https://kind.sigs.k8s.io/docs/user/working-offline/#using-a-prebuilt-node-imagenode-image
  */
-function checkImageForVersion(image: string, version: string) {
-  if (
-    image !== '' &&
-    image.startsWith('kindest/node') &&
-    !image.includes('@sha256:')
-  ) {
+function checkImageForVersion(
+  image: string,
+  kind_version: string,
+  annotationProperties: core.AnnotationProperties
+) {
+  if (image && image.startsWith('kindest/node') && !image.includes('@sha256:')) {
     core.warning(
-      `Please include the @sha256: image digest from the image in the release notes. You can find available image tags on the release page, https://github.com/kubernetes-sigs/kind/releases/tag/${version}`
+      `Please include the @sha256: image digest for ${image} from the image in the release notes. You can find available image tags on the release page, https://github.com/kubernetes-sigs/kind/releases/tag/${kind_version}`,
+      annotationProperties
     );
   }
 }

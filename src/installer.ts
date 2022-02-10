@@ -3,41 +3,38 @@ import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 import process from 'process';
 import * as cache from './cache';
-import {
-  KIND_COMMAND,
-  KIND_TOOL_NAME,
-  KUBECTL_COMMAND,
-  KUBECTL_TOOL_NAME,
-} from './constants';
+import { KIND_COMMAND, KIND_TOOL_NAME, KUBECTL_COMMAND, KUBECTL_TOOL_NAME } from './constants';
 
 export async function installTools(
   kind: {
     version: string;
     url: string;
   },
-  kubectl: {
+  kubernetes: {
     version: string;
     url: string;
   }
-) {
-  const { paths, primaryKey } = await cache.restoreSetupKindCache(
-    kind.version,
-    kubectl.version
-  );
+): Promise<void> {
+  const { paths, primaryKey } = await cache.restoreSetupKindCache(kind.version, kubernetes.version);
   const kindDownloaded = await installKind(kind.version, kind.url);
-  const kubectlDownloaded = await installKubectl(kubectl.version, kubectl.url);
-  if (kindDownloaded || kubectlDownloaded) {
+  const kubernetesDownloaded = await installKubernetesTools(kubernetes.version, kubernetes.url);
+  if (kindDownloaded || kubernetesDownloaded) {
     await cache.saveSetupKindCache(paths, primaryKey);
   }
 }
 
-async function installKind(version: string, url: string) {
+async function installKind(version: string, url: string): Promise<boolean> {
   return await installTool(KIND_COMMAND, KIND_TOOL_NAME, version, url);
 }
 
-async function installKubectl(version: string, url: string) {
+async function installKubernetesTools(version: string, url: string): Promise<boolean> {
   if (version !== '' && url !== '') {
-    return await installTool(KUBECTL_COMMAND, KUBECTL_TOOL_NAME, version, url);
+    return await installTool(
+      KUBECTL_COMMAND,
+      KUBECTL_TOOL_NAME,
+      version,
+      `${url}/${KUBECTL_COMMAND}`
+    );
   }
   return false;
 }
@@ -53,13 +50,7 @@ async function downloadTool(
   if (process.platform !== 'win32') {
     await exec.exec('chmod', ['+x', downloadPath]);
   }
-  const toolPath: string = await tc.cacheFile(
-    downloadPath,
-    command,
-    toolName,
-    version
-  );
-  return toolPath;
+  return await tc.cacheFile(downloadPath, command, toolName, version);
 }
 
 async function installTool(
@@ -67,7 +58,7 @@ async function installTool(
   toolName: string,
   version: string,
   url: string
-) {
+): Promise<boolean> {
   let toolPath: string = tc.find(toolName, version);
   let downloaded = false;
   if (toolPath === '') {

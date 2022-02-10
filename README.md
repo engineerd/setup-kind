@@ -32,8 +32,6 @@ jobs:
 > version 0.6 of Kind. See [this document for a detailed migration
 > guide][kind-kubeconfig]
 
-> Note: GitHub Actions workers come pre-configured with `kubectl`.
-
 The following arguments can be configured on the job using the `with` keyword
 (see example above). Currently, possible inputs are all the flags for
 `kind cluster create`, with the additional version, which sets the Kind version
@@ -77,6 +75,15 @@ jobs:
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
 ```
+
+## Kubectl
+
+GitHub Actions workers come pre-configured with `kubectl` but if the Kubernetes version can be identified from the image
+input or the images of the nodes in the config file, it will be installed in the tool-cache with the right version.
+
+## Self-hosted agents
+
+When using on a self-hosted agent, an access to GITHUB_API_URL (<https://api.github.com> by default) and <https://storage.googleapis.com/> are required for setup-kind to work properly.
 
 [kind-kubeconfig]: https://github.com/kubernetes-sigs/kind/issues/1060
 [gh-actions-path]:

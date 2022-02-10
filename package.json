@@ -39,11 +39,13 @@
     "@actions/glob": "^0.2.0",
     "@actions/io": "^1.1.1",
     "@actions/tool-cache": "^1.7.1",
+    "js-yaml": "^4.1.0",
     "semver": "^7.3.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@types/js-yaml": "^4.0.5",
     "@types/node": "^17.0.8",
     "@types/semver": "^7.3.9",
     "@types/uuid": "^8.3.4",

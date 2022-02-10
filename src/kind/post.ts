@@ -18,10 +18,8 @@ export class KindPostService {
   private constructor() {
     this.name = core.getInput(Input.Name);
     this.kubeConfigFile = core.getInput(Input.KubeConfig);
-    this.skipClusterDeletion =
-      core.getInput(Input.SkipClusterDeletion) === 'true';
-    this.skipClusterLogsExport =
-      core.getInput(Input.SkipClusterLogsExport) === 'true';
+    this.skipClusterDeletion = core.getInput(Input.SkipClusterDeletion) === 'true';
+    this.skipClusterLogsExport = core.getInput(Input.SkipClusterLogsExport) === 'true';
     this.verbosity = +core.getInput(Input.Verbosity);
     this.quiet = core.getInput(Input.Quiet) === 'true';
   }
@@ -69,17 +67,11 @@ export class KindPostService {
       dirs.push(this.name);
     }
     dirs.push('logs');
-    return path.join(
-      `${process.env['RUNNER_TEMP'] || ''}`,
-      uuidv5(dirs.join('/'), uuidv5.URL)
-    );
+    return path.join(`${process.env['RUNNER_TEMP'] || ''}`, uuidv5(dirs.join('/'), uuidv5.URL));
   }
 
   private artifactName(): string {
-    const artifactArgs: string[] = [
-      `${process.env['GITHUB_JOB'] || ''}`,
-      KIND_TOOL_NAME,
-    ];
+    const artifactArgs: string[] = [`${process.env['GITHUB_JOB'] || ''}`, KIND_TOOL_NAME];
     if (this.name != '') {
       artifactArgs.push(this.name);
     }
@@ -96,12 +88,7 @@ export class KindPostService {
     const options = {
       continueOnError: true,
     };
-    await artifactClient.uploadArtifact(
-      this.artifactName(),
-      files,
-      rootDirectory,
-      options
-    );
+    await artifactClient.uploadArtifact(this.artifactName(), files, rootDirectory, options);
   }
 
   async deleteCluster() {

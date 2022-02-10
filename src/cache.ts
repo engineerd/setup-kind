@@ -9,20 +9,17 @@ import { KIND_TOOL_NAME, KUBECTL_TOOL_NAME } from './constants';
 /**
  *  Prefix of the kind cache key
  */
-const KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS'] || ''}-${
+const SETUP_KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS'] || ''}-${
   process.env['RUNNER_ARCH'] || ''
 }-setup-kind-`;
 
 /**
- * Restores Kind by version, $RUNNER_OS and $RUNNER_ARCH
+ * Restores Kind and Kubectl from cache
  * @param version
  */
-export async function restoreSetupKindCache(
-  kind_version: string,
-  kubectl_version: string
-) {
-  const primaryKey = setupKindPrimaryKey(kind_version, kubectl_version);
-  const paths = setupKindCachePaths(kind_version, kubectl_version);
+export async function restoreSetupKindCache(kind_version: string, kubernetes_version: string) {
+  const primaryKey = setupKindPrimaryKey(kind_version, kubernetes_version);
+  const paths = setupKindCachePaths(kind_version, kubernetes_version);
 
   core.debug(`Primary key is ${primaryKey}`);
 
@@ -45,7 +42,7 @@ export async function restoreSetupKindCache(
  * @param version
  * @returns the cache paths
  */
-function setupKindCachePaths(kind_version: string, kubectl_version: string) {
+function setupKindCachePaths(kind_version: string, kubernetes_version: string) {
   const paths = [
     path.join(
       `${process.env['RUNNER_TOOL_CACHE'] || ''}`,
@@ -53,12 +50,12 @@ function setupKindCachePaths(kind_version: string, kubectl_version: string) {
       semver.clean(kind_version) || kind_version
     ),
   ];
-  if (kubectl_version !== '') {
+  if (kubernetes_version !== '') {
     paths.push(
       path.join(
         `${process.env['RUNNER_TOOL_CACHE'] || ''}`,
         KUBECTL_TOOL_NAME,
-        semver.clean(kubectl_version) || kubectl_version
+        semver.clean(kubernetes_version) || kubernetes_version
       )
     );
   }
@@ -72,19 +69,19 @@ function setupKindCachePaths(kind_version: string, kubectl_version: string) {
  * @param version
  * @returns the primary Key
  */
-function setupKindPrimaryKey(kind_version: string, kubectl_version: string) {
+function setupKindPrimaryKey(kind_version: string, kubernetes_version: string) {
   const key = JSON.stringify({
     architecture: process.arch,
     kind: kind_version,
-    kubectl: kubectl_version,
+    kubernetes: kubernetes_version,
     platform: process.platform,
   });
   const hash = crypto.createHash('sha256').update(key).digest('hex');
-  return `${KIND_CACHE_KEY_PREFIX}${hash}`;
+  return `${SETUP_KIND_CACHE_KEY_PREFIX}${hash}`;
 }
 
 /**
- * Caches Kind by it's primaryKey
+ * Save Kind and Kubectl in the cache
  * @param primaryKey
  */
 export async function saveSetupKindCache(paths: string[], primaryKey: string) {

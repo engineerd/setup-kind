@@ -57,9 +57,7 @@ describe('checking input parsing', function () {
     expect(args).toEqual([
       'export',
       'logs',
-      path.normalize(
-        '/home/runner/work/_temp/1c1900ec-8f4f-5069-a966-1d3072cc9723'
-      ),
+      path.normalize('/home/runner/work/_temp/1c1900ec-8f4f-5069-a966-1d3072cc9723'),
       '--verbosity',
       testEnvVars.INPUT_VERBOSITY,
       '--quiet',

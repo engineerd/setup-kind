@@ -20,8 +20,7 @@ export class KindMainService {
     this.name = core.getInput(Input.Name, { required: true });
     this.waitDuration = core.getInput(Input.Wait);
     this.kubeConfigFile = core.getInput(Input.KubeConfig);
-    this.skipClusterCreation =
-      core.getInput(Input.SkipClusterCreation) === 'true';
+    this.skipClusterCreation = core.getInput(Input.SkipClusterCreation) === 'true';
     this.verbosity = +core.getInput(Input.Verbosity);
     this.quiet = core.getInput(Input.Quiet) === 'true';
   }

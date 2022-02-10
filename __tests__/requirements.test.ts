@@ -26,8 +26,6 @@ describe('checking requirements', function () {
 
   it('required GITHUB_JOB must be defined', async () => {
     process.env['GITHUB_JOB'] = '';
-    await expect(checkEnvironment()).rejects.toThrow(
-      'Expected GITHUB_JOB to be defined'
-    );
+    await expect(checkEnvironment()).rejects.toThrow('Expected GITHUB_JOB to be defined');
   });
 });
