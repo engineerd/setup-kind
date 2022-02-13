@@ -48,7 +48,7 @@ async function downloadTool(
   version: string,
   url: string
 ): Promise<string> {
-  core.info(`downloading ${toolName} from ${url}`);
+  core.info(`Downloading ${toolName}@${version} from ${url}`);
   const downloadPath = await tc.downloadTool(url);
   if (process.platform !== 'win32') {
     await exec.exec('chmod', ['+x', downloadPath]);
@@ -59,7 +59,6 @@ async function downloadTool(
     toolName,
     version
   );
-  core.debug(`${toolName} is cached under ${toolPath}`);
   return toolPath;
 }
 
@@ -76,5 +75,6 @@ async function installTool(
     downloaded = true;
   }
   core.addPath(toolPath);
+  core.info(`The tool ${toolName}@${version} is cached under ${toolPath}`);
   return downloaded;
 }
