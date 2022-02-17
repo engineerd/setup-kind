@@ -15,12 +15,20 @@ export async function installTools(
     url: string;
   }
 ): Promise<void> {
-  const { paths, primaryKey } = await cache.restoreSetupKindCache(kind.version, kubernetes.version);
-  const kindDownloaded = await installKind(kind.version, kind.url);
-  const kubernetesDownloaded = await installKubernetesTools(kubernetes.version, kubernetes.url);
-  if (kindDownloaded || kubernetesDownloaded) {
-    await cache.saveSetupKindCache(paths, primaryKey);
-  }
+  await core.group(
+    `Install kind@${kind.version}${kubernetes.version ? ' and kubectl@' + kubernetes.version : ''}`,
+    async () => {
+      const { paths, primaryKey } = await cache.restoreSetupKindCache(
+        kind.version,
+        kubernetes.version
+      );
+      const kindDownloaded = await installKind(kind.version, kind.url);
+      const kubernetesDownloaded = await installKubernetesTools(kubernetes.version, kubernetes.url);
+      if (kindDownloaded || kubernetesDownloaded) {
+        await cache.saveSetupKindCache(paths, primaryKey);
+      }
+    }
+  );
 }
 
 async function installKind(version: string, url: string): Promise<boolean> {

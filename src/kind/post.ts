@@ -95,14 +95,18 @@ export class KindPostService {
     if (this.skipClusterDeletion) {
       return;
     }
-    await executeKindCommand(this.deleteCommand());
+    await core.group(`Delete cluster "${this.name}"`, async () => {
+      await executeKindCommand(this.deleteCommand());
+    });
   }
 
   async exportClusterLogs() {
     if (this.skipClusterLogsExport) {
       return;
     }
-    await executeKindCommand(this.exportLogsCommand());
-    await this.uploadKindLogs();
+    await core.group(`Export logs for cluster "${this.name}"`, async () => {
+      await executeKindCommand(this.exportLogsCommand());
+      await this.uploadKindLogs();
+    });
   }
 }

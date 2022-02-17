@@ -63,6 +63,8 @@ export class KindMainService {
     if (this.skipClusterCreation) {
       return;
     }
-    await executeKindCommand(this.createCommand());
+    await core.group(`Create cluster "${this.name}"`, async () => {
+      await executeKindCommand(this.createCommand());
+    });
   }
 }
