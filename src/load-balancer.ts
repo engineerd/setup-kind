@@ -1,75 +1,50 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
-import fs from 'fs';
 import * as yaml from 'js-yaml';
-import path from 'path';
-import { v5 as uuidv5 } from 'uuid';
-import { Input, KIND_TOOL_NAME, KUBECTL_COMMAND } from './constants';
-
-async function executeKubectlCommand(args: string[]) {
-  await exec.exec(KUBECTL_COMMAND, args);
-}
-
-async function kubectlApply(file: string) {
-  const args: string[] = ['apply', '-f', file];
-  await executeKubectlCommand(args);
-}
+import { Input } from './constants';
+import * as kubectl from './kubectl';
+import { ConfigMap } from './kubernetes';
 
 const METALLB_DEFAULT_VERSION = 'v0.12.1';
 
+const METALLB_SYSTEM = 'metallb-system';
+
 async function createMemberlistSecrets() {
   await core.group('Create the memberlist secrets', async () => {
-    const args: string[] = [
-      'create',
-      'secret',
-      'generic',
-      '-n',
-      'metallb-system',
-      'memberlist',
-      '--from-literal=secretkey="$(openssl rand -base64 128)"',
-    ];
-    await executeKubectlCommand(args);
+    await kubectl.createMemberlistSecret(METALLB_SYSTEM);
   });
 }
 
-async function createMetallbNamespace() {
-  await core.group('Create the metallb namespace', async () => {
-    await kubectlApply(
-      `https://raw.githubusercontent.com/metallb/metallb/${METALLB_DEFAULT_VERSION}/manifests/namespace.yaml`
+async function createNamespace(version: string) {
+  await core.group(`Create the metallb@${version} namespace`, async () => {
+    await kubectl.apply(
+      `https://raw.githubusercontent.com/metallb/metallb/${version}/manifests/namespace.yaml`
     );
   });
 }
 
-async function applyMetallbManifest() {
-  await core.group('Apply metallb manifest', async () => {
-    await kubectlApply(
-      `https://raw.githubusercontent.com/metallb/metallb/${METALLB_DEFAULT_VERSION}/manifests/metallb.yaml`
+async function applyManifest(version: string) {
+  await core.group(`Apply metallb@${version} manifest`, async () => {
+    await kubectl.apply(
+      `https://raw.githubusercontent.com/metallb/metallb/${version}/manifests/metallb.yaml`
     );
   });
 }
 
 export async function setUpLoadBalancer() {
   if (hasLoadBalancer()) {
-    await createMetallbNamespace();
+    const version = METALLB_DEFAULT_VERSION;
+    await createNamespace(version);
     await createMemberlistSecrets();
-    await applyMetallbManifest();
-    await waitForMetallbPods();
+    await applyManifest(version);
+    await waitForPods();
     await setupAddressPool();
   }
 }
 
-async function waitForMetallbPods() {
+async function waitForPods() {
   await core.group('Wait for metallb pods to have a status of Running', async () => {
-    const args: string[] = [
-      'wait',
-      '-n',
-      'metallb-system',
-      'pod',
-      '--all',
-      '--for=condition=ready',
-      '--timeout=240s',
-    ];
-    await executeKubectlCommand(args);
+    await kubectl.waitForPodReady(METALLB_SYSTEM);
   });
 }
 
@@ -92,41 +67,26 @@ async function getIPBytes() {
 export async function setupAddressPool() {
   await core.group('Setup address pool used by load-balancers', async () => {
     const { first, second } = await getIPBytes();
-
-    const addressPool = {
-      'address-pools': [
-        {
-          name: 'default',
-          protocol: 'layer2',
-          addresses: [`${first}.${second}.255.200-${first}.${second}.255.250`],
-        },
-      ],
-    };
-
-    const configMap = {
+    const configMap: ConfigMap = {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
-        namespace: 'metallb-system',
+        namespace: METALLB_SYSTEM,
         name: 'config',
       },
       data: {
-        config: yaml.dump(addressPool),
+        config: yaml.dump({
+          'address-pools': [
+            {
+              name: 'default',
+              protocol: 'layer2',
+              addresses: [`${first}.${second}.255.200-${first}.${second}.255.250`],
+            },
+          ],
+        }),
       },
     };
-    const dirs: string[] = [KIND_TOOL_NAME, core.getInput(Input.Name), 'load-balancer'];
-    const dir = path.join(
-      `${process.env['RUNNER_TEMP'] || ''}`,
-      uuidv5(dirs.join('/'), uuidv5.URL)
-    );
-    const file = path.join(dir, 'metallb-configmap.yaml');
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    const data = yaml.dump(configMap);
-    core.debug(`Dumping into ${file}: \n${data}`);
-    fs.writeFileSync(file, data, 'utf8');
-    await kubectlApply(file);
+    await kubectl.applyConfigMap(configMap, 'metallb-configmap.yaml');
   });
 }
 

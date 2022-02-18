@@ -1,4 +1,4 @@
-name: "Build and test Action"
+name: 'Build and test Action'
 on: [push, pull_request]
 
 jobs:
@@ -20,5 +20,5 @@ jobs:
       - run: npm run test:coverage
 
       - uses: codecov/codecov-action@v2
-      
+
       - run: npm audit

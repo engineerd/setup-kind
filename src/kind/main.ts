@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import path from 'path';
 import process from 'process';
 import { Flag, Input } from '../constants';
-import { executeKindCommand } from './core';
+import { executeKind } from './core';
 
 export class KindMainService {
   configFile: string;
@@ -30,7 +30,7 @@ export class KindMainService {
   }
 
   // returns the arguments to pass to `kind create cluster`
-  createCommand(): string[] {
+  createCommand(configFile: string): string[] {
     const args: string[] = ['create', 'cluster'];
     if (this.verbosity > 0) {
       args.push(Flag.Verbosity, this.verbosity.toString());
@@ -38,33 +38,35 @@ export class KindMainService {
     if (this.quiet) {
       args.push(Flag.Quiet);
     }
-    if (this.configFile != '') {
+    if (this.configFile !== '') {
       args.push(
         Flag.Config,
         path.join(`${process.env['GITHUB_WORKSPACE'] || ''}`, this.configFile)
       );
+    } else if (configFile !== '') {
+      args.push(Flag.Config, configFile);
     }
-    if (this.image != '') {
+    if (this.image !== '') {
       args.push(Flag.Image, this.image);
     }
-    if (this.name != '') {
+    if (this.name !== '') {
       args.push(Flag.Name, this.name);
     }
-    if (this.waitDuration != '') {
+    if (this.waitDuration !== '') {
       args.push(Flag.Wait, this.waitDuration);
     }
-    if (this.kubeConfigFile != '') {
+    if (this.kubeConfigFile !== '') {
       args.push(Flag.KubeConfig, this.kubeConfigFile);
     }
     return args;
   }
 
-  async createCluster() {
+  async createCluster(configFile: string) {
     if (this.skipClusterCreation) {
       return;
     }
     await core.group(`Create cluster "${this.name}"`, async () => {
-      await executeKindCommand(this.createCommand());
+      await executeKind(this.createCommand(configFile));
     });
   }
 }

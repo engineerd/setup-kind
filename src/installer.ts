@@ -1,9 +1,14 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
-import process from 'process';
 import * as cache from './cache';
-import { KIND_COMMAND, KIND_TOOL_NAME, KUBECTL_COMMAND, KUBECTL_TOOL_NAME } from './constants';
+import {
+  IS_WINDOWS,
+  KIND_COMMAND,
+  KIND_TOOL_NAME,
+  KUBECTL_COMMAND,
+  KUBECTL_TOOL_NAME,
+} from './constants';
 
 export async function installTools(
   kind: {
@@ -55,7 +60,7 @@ async function downloadTool(
 ): Promise<string> {
   core.info(`Downloading ${toolName}@${version} from ${url}`);
   const downloadPath = await tc.downloadTool(url);
-  if (process.platform !== 'win32') {
+  if (!IS_WINDOWS) {
     await exec.exec('chmod', ['+x', downloadPath]);
   }
   return await tc.cacheFile(downloadPath, command, toolName, version);

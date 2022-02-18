@@ -5,7 +5,7 @@ import path from 'path';
 import process from 'process';
 import { v5 as uuidv5 } from 'uuid';
 import { Flag, Input, KIND_TOOL_NAME } from '../constants';
-import { executeKindCommand } from './core';
+import { executeKind } from './core';
 
 export class KindPostService {
   name: string;
@@ -96,7 +96,7 @@ export class KindPostService {
       return;
     }
     await core.group(`Delete cluster "${this.name}"`, async () => {
-      await executeKindCommand(this.deleteCommand());
+      await executeKind(this.deleteCommand());
     });
   }
 
@@ -105,7 +105,7 @@ export class KindPostService {
       return;
     }
     await core.group(`Export logs for cluster "${this.name}"`, async () => {
-      await executeKindCommand(this.exportLogsCommand());
+      await executeKind(this.exportLogsCommand());
       await this.uploadKindLogs();
     });
   }

@@ -44,7 +44,7 @@ describe('checking input parsing', function () {
   });
 
   it('correctly generates the cluster create command', () => {
-    const args: string[] = KindMainService.getInstance().createCommand();
+    const args: string[] = KindMainService.getInstance().createCommand('');
     expect(args).toEqual([
       'create',
       'cluster',

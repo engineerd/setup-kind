@@ -54,6 +54,7 @@ Optional inputs:
 - `verbosity`: numeric log verbosity, (info = 0, debug = 3, trace = 2147483647) (default `"0"`)
 - `quiet`: silence all stderr output (default `"false"`)
 - `loadBalancer`: setup a Metallb load-balancer (default `"false"`)
+- `localRegistry`: setup a local registry on localhost:5000 (default `"false"`)
 
 Example using optional inputs:
 
@@ -81,6 +82,15 @@ jobs:
 
 GitHub Actions workers come pre-configured with `kubectl` but if the Kubernetes version can be identified from the image
 input or the images of the nodes in the config file, it will be installed in the tool-cache with the right version.
+
+## Load-balancer
+
+When `loadBalancer: true` a load-balancer is created based on <https://kind.sigs.k8s.io/docs/user/loadbalancer/>
+
+## Local registry
+
+When `localRegistry: true` a local registry is created based on <https://kind.sigs.k8s.io/docs/user/local-registry/>
+It is then available on localhost:5000 as KIND_REGISTRY on the host machine
 
 ## Self-hosted agents
 

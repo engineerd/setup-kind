@@ -7,6 +7,7 @@ export enum Input {
   Config = 'config',
   Image = 'image',
   LoadBalancer = 'loadBalancer',
+  LocalRegistry = 'localRegistry',
   Name = 'name',
   Token = 'token',
   Wait = 'wait',
@@ -27,9 +28,11 @@ export enum Flag {
   KubeConfig = '--kubeconfig',
 }
 
-export const KIND_COMMAND = process.platform === 'win32' ? 'kind.exe' : 'kind';
+export const IS_WINDOWS = process.platform === 'win32';
+
+export const KIND_COMMAND = IS_WINDOWS ? 'kind.exe' : 'kind';
 export const KIND_DEFAULT_VERSION = 'v0.11.1';
 export const KIND_TOOL_NAME = 'kind';
 
-export const KUBECTL_COMMAND = process.platform === 'win32' ? 'kubectl.exe' : 'kubectl';
+export const KUBECTL_COMMAND = IS_WINDOWS ? 'kubectl.exe' : 'kubectl';
 export const KUBECTL_TOOL_NAME = 'kubectl';

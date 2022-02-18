@@ -2,43 +2,29 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as io from '@actions/io';
 import { ok } from 'assert';
-import fs from 'fs';
-import * as yaml from 'js-yaml';
 import path from 'path';
 import * as semver from 'semver';
 import { Input, KIND_DEFAULT_VERSION } from './constants';
 import { env as goenv } from './go';
+import { Cluster } from './kubernetes';
+import { hasRegistryConfig, KIND_REGISTRY, REGISTRY_NAME } from './local-registry';
+import { read } from './yaml-helper';
 
 export async function checkEnvironment() {
   checkVariables();
   await checkDocker();
   const { platform, kind } = await checkPlatform();
   const kubernetes = await getKubernetes(platform, kind.version);
+  checkKindConfig();
   return {
     kind,
     kubernetes,
   };
 }
 
-interface Cluster {
-  kind?: string;
-  apiVersion?: string;
-  name?: string;
-  nodes?: Node[];
-  kubeadmConfigPatches?: string[];
-  containerdConfigPatches?: string[];
-}
-
-interface Node {
-  role?: string;
-  image?: string;
-  kubeadmConfigPatches?: string[];
-}
-
 async function getKubernetes(platform: string, kind_version: string) {
   const image = core.getInput(Input.Image);
-  checkImageForPlatform(image, platform);
-  checkImageForVersion(image, kind_version, {});
+  checkImageForVersion(image, kind_version);
   let version = parseKubernetesVersion(image);
   let url = '';
 
@@ -61,9 +47,7 @@ async function getKubernetes(platform: string, kind_version: string) {
 
 function parseKubernetesVersionFromConfig(kindConfig: string, kind_version: string) {
   let version = '';
-  const kindConfigPath = path.join(`${process.env['GITHUB_WORKSPACE'] || ''}`, kindConfig);
-  const doc = yaml.load(fs.readFileSync(kindConfigPath, 'utf8')) as Cluster;
-  ok(doc.kind === 'Cluster', `The config file ${kindConfig} must be of kind Cluster`);
+  const doc = parseKindConfig(kindConfig);
   if (doc.nodes) {
     const versions: string[] = doc.nodes
       .map((node) => {
@@ -85,6 +69,13 @@ function parseKubernetesVersionFromConfig(kindConfig: string, kind_version: stri
     }
   }
   return version;
+}
+
+function parseKindConfig(kindConfig: string) {
+  const kindConfigPath = path.join(`${process.env['GITHUB_WORKSPACE'] || ''}`, kindConfig);
+  const doc = read(kindConfigPath) as Cluster;
+  ok(doc.kind === 'Cluster', `The config file ${kindConfig} must be of kind Cluster`);
+  return doc;
 }
 
 function parseKubernetesVersion(image: string) {
@@ -249,30 +240,39 @@ function checkVersion(version: string) {
 }
 
 /**
- * An image is required for platforms outside of linux/amd64 and linux/arm64 as they are not packages with KinD by default
- * @param image
- * @param platform
- */
-function checkImageForPlatform(image: string, platform: string) {
-  const platforms: string[] = ['linux/amd64', 'linux/arm64'];
-  if (!platforms.includes(platform)) {
-    ok(image, `Input ${Input.Image} is required for platform ${platform}`);
-  }
-}
-
-/**
  * Prints a warning if a kindest/node is used without sha256.
  * This follows the recommendation from https://kind.sigs.k8s.io/docs/user/working-offline/#using-a-prebuilt-node-imagenode-image
  */
 function checkImageForVersion(
   image: string,
   kind_version: string,
-  annotationProperties: core.AnnotationProperties
+  annotationProperties: core.AnnotationProperties = {}
 ) {
   if (image && image.startsWith('kindest/node') && !image.includes('@sha256:')) {
     core.warning(
       `Please include the @sha256: image digest for ${image} from the image in the release notes. You can find available image tags on the release page, https://github.com/kubernetes-sigs/kind/releases/tag/${kind_version}`,
       annotationProperties
     );
+  }
+}
+
+/**
+ * Prints a warning if the local registry configuration is missing in the kind config file
+ */
+function checkKindConfig() {
+  const kindConfigFile = core.getInput(Input.Config);
+  if (core.getInput(Input.LocalRegistry) === 'true' && kindConfigFile !== '') {
+    const kindConfig = parseKindConfig(kindConfigFile);
+    if (
+      !kindConfig.containerdConfigPatches ||
+      !kindConfig.containerdConfigPatches.find((value) => hasRegistryConfig(value))
+    ) {
+      core.warning(
+        `Please provide the following configuration in containerdConfigPatches:
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."${KIND_REGISTRY}"]
+           endpoint = ["https://${REGISTRY_NAME}:5000"]`,
+        { file: kindConfigFile }
+      );
+    }
   }
 }

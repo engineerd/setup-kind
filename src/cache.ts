@@ -7,13 +7,6 @@ import * as semver from 'semver';
 import { KIND_TOOL_NAME, KUBECTL_TOOL_NAME } from './constants';
 
 /**
- *  Prefix of the kind cache key
- */
-const SETUP_KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS'] || ''}-${
-  process.env['RUNNER_ARCH'] || ''
-}-setup-kind-`;
-
-/**
  * Restores Kind and Kubectl from cache
  * @param version
  */
@@ -43,17 +36,14 @@ export async function restoreSetupKindCache(kind_version: string, kubernetes_ver
  * @returns the cache paths
  */
 function setupKindCachePaths(kind_version: string, kubernetes_version: string) {
+  const RUNNER_TOOL_CACHE = `${process.env['RUNNER_TOOL_CACHE'] || ''}`;
   const paths = [
-    path.join(
-      `${process.env['RUNNER_TOOL_CACHE'] || ''}`,
-      KIND_TOOL_NAME,
-      semver.clean(kind_version) || kind_version
-    ),
+    path.join(RUNNER_TOOL_CACHE, KIND_TOOL_NAME, semver.clean(kind_version) || kind_version),
   ];
   if (kubernetes_version !== '') {
     paths.push(
       path.join(
-        `${process.env['RUNNER_TOOL_CACHE'] || ''}`,
+        RUNNER_TOOL_CACHE,
         KUBECTL_TOOL_NAME,
         semver.clean(kubernetes_version) || kubernetes_version
       )
@@ -70,6 +60,9 @@ function setupKindCachePaths(kind_version: string, kubernetes_version: string) {
  * @returns the primary Key
  */
 function setupKindPrimaryKey(kind_version: string, kubernetes_version: string) {
+  const SETUP_KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS'] || ''}-${
+    process.env['RUNNER_ARCH'] || ''
+  }-setup-kind-`;
   const key = JSON.stringify({
     architecture: process.arch,
     kind: kind_version,

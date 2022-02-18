@@ -1,48 +1,51 @@
-name: "KinD (Kubernetes in Docker) Action"
-description: "Easily run a Kubernetes cluster in your GitHub Action"
-author: "Engineerd"
+name: 'KinD (Kubernetes in Docker) Action'
+description: 'Easily run a Kubernetes cluster in your GitHub Action'
+author: 'Engineerd'
 inputs:
   version:
-    description: "Version of Kind to use (default v0.11.1)"
-    default: "v0.11.1"
+    description: 'Version of Kind to use (default v0.11.1)'
+    default: 'v0.11.1'
     required: true
   config:
-    description: "Path (relative to the root of the repository) to a kind config file"
+    description: 'Path (relative to the root of the repository) to a kind config file'
   image:
-    description: "Node Docker image to use for booting the cluster"
+    description: 'Node Docker image to use for booting the cluster'
   name:
-    description: "Cluster name (default kind)"
-    default: "kind"
+    description: 'Cluster name (default kind)'
+    default: 'kind'
     required: true
   wait:
-    description: "Wait for control plane node to be ready (default 300s)"
-    default: "300s"
+    description: 'Wait for control plane node to be ready (default 300s)'
+    default: '300s'
   kubeconfig:
-    description: "Sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config"
+    description: 'Sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config'
   skipClusterCreation:
-    description: "If true, the action will not create a cluster, just acquire the tools"
-    default: "false"
+    description: 'If true, the action will not create a cluster, just acquire the tools'
+    default: 'false'
   skipClusterDeletion:
-    description: "If true, the action will not delete the cluster"
-    default: "false"
+    description: 'If true, the action will not delete the cluster'
+    default: 'false'
   skipClusterLogsExport:
-    description: "If true, the action will not export the cluster logs"
-    default: "false"
+    description: 'If true, the action will not export the cluster logs'
+    default: 'false'
   verbosity:
-    description: "Defines log verbosity with a numeric value, (info = 0, debug = 3, trace = 2147483647)"
-    default: "0"
+    description: 'Defines log verbosity with a numeric value, (info = 0, debug = 3, trace = 2147483647)'
+    default: '0'
   quiet:
-    description: "Silence all stderr output"
-    default: "false"
+    description: 'Silence all stderr output'
+    default: 'false'
   token:
-    description: "Used to retrieve release informations concerning KinD and Kubernetes from https://api.github.com"
-    default: "${{ github.token }}"
+    description: 'Used to retrieve release informations concerning KinD and Kubernetes from https://api.github.com'
+    default: '${{ github.token }}'
     required: true
   loadBalancer:
-    description: "Setup a Metallb load-balancer"
-    default: "false"
+    description: 'Setup a Metallb load-balancer'
+    default: 'false'
+  localRegistry:
+    description: 'Setup a local registry on localhost:5000'
+    default: 'false'
 runs:
-  using: "node12"
-  main: "dist/main/index.js"
-  post: "dist/post/index.js"
+  using: 'node12'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'
   post-if: success()
