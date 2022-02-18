@@ -38,6 +38,9 @@ inputs:
     description: "Used to retrieve release informations concerning KinD and Kubernetes from https://api.github.com"
     default: "${{ github.token }}"
     required: true
+  loadBalancer:
+    description: "Setup a Metallb load-balancer"
+    default: "false"
 runs:
   using: "node12"
   main: "dist/main/index.js"

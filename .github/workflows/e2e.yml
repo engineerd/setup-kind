@@ -19,6 +19,7 @@ jobs:
         uses: ./
         with:
           image: kindest/node:v1.20.2
+          loadBalancer: true
 
       - run: kubectl cluster-info
 

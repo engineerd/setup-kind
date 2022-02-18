@@ -6,6 +6,7 @@ export enum Input {
   Quiet = 'quiet',
   Config = 'config',
   Image = 'image',
+  LoadBalancer = 'loadBalancer',
   Name = 'name',
   Token = 'token',
   Wait = 'wait',
