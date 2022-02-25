@@ -48,7 +48,7 @@ async function waitForPods() {
   });
 }
 
-async function getIPBytes() {
+async function getIPAddresses() {
   const args: string[] = [
     'network',
     'inspect',
@@ -58,15 +58,12 @@ async function getIPBytes() {
   ];
   const { stdout } = await exec.getExecOutput('docker', args, { silent: true });
   const bytes = stdout.replace(/'/g, '').split('.');
-  return {
-    first: bytes[0],
-    second: bytes[1],
-  };
+  return [`${bytes[0]}.${bytes[1]}.255.200-${bytes[0]}.${bytes[1]}.255.250`];
 }
 
 export async function setupAddressPool() {
   await core.group('Setup address pool used by load-balancers', async () => {
-    const { first, second } = await getIPBytes();
+    const addresses = await getIPAddresses();
     const configMap: ConfigMap = {
       apiVersion: 'v1',
       kind: 'ConfigMap',
@@ -80,7 +77,7 @@ export async function setupAddressPool() {
             {
               name: 'default',
               protocol: 'layer2',
-              addresses: [`${first}.${second}.255.200-${first}.${second}.255.250`],
+              addresses: addresses,
             },
           ],
         }),
