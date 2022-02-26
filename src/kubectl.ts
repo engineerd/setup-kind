@@ -17,7 +17,7 @@ export async function apply(file: string) {
 
 export async function applyConfigMap(configMap: ConfigMap, fileName: string) {
   const dirs: string[] = [KUBECTL_TOOL_NAME, core.getInput(Input.Name)];
-  const dir = path.join(`${process.env['RUNNER_TEMP'] || ''}`, uuidv5(dirs.join('/'), uuidv5.URL));
+  const dir = path.join(process.env['RUNNER_TEMP'] || '', uuidv5(dirs.join('/'), uuidv5.URL));
   const file = write(dir, fileName, configMap);
   await apply(file);
 }

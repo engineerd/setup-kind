@@ -36,7 +36,7 @@ export async function restoreSetupKindCache(kind_version: string, kubernetes_ver
  * @returns the cache paths
  */
 function setupKindCachePaths(kind_version: string, kubernetes_version: string) {
-  const RUNNER_TOOL_CACHE = `${process.env['RUNNER_TOOL_CACHE'] || ''}`;
+  const RUNNER_TOOL_CACHE = process.env['RUNNER_TOOL_CACHE'] || '';
   const paths = [
     path.join(RUNNER_TOOL_CACHE, KIND_TOOL_NAME, semver.clean(kind_version) || kind_version),
   ];
@@ -60,9 +60,9 @@ function setupKindCachePaths(kind_version: string, kubernetes_version: string) {
  * @returns the primary Key
  */
 function setupKindPrimaryKey(kind_version: string, kubernetes_version: string) {
-  const SETUP_KIND_CACHE_KEY_PREFIX = `${process.env['RUNNER_OS'] || ''}-${
-    process.env['RUNNER_ARCH'] || ''
-  }-setup-kind-`;
+  const RUNNER_OS = process.env['RUNNER_OS'] || '';
+  const RUNNER_ARCH = process.env['RUNNER_ARCH'] || '';
+  const SETUP_KIND_CACHE_KEY_PREFIX = `${RUNNER_OS}-${RUNNER_ARCH}-setup-kind-`;
   const key = JSON.stringify({
     architecture: process.arch,
     kind: kind_version,

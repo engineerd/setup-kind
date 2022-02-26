@@ -39,10 +39,7 @@ export class KindMainService {
       args.push(Flag.Quiet);
     }
     if (this.configFile !== '') {
-      args.push(
-        Flag.Config,
-        path.join(`${process.env['GITHUB_WORKSPACE'] || ''}`, this.configFile)
-      );
+      args.push(Flag.Config, path.join(process.env['GITHUB_WORKSPACE'] || '', this.configFile));
     } else if (configFile !== '') {
       args.push(Flag.Config, configFile);
     }

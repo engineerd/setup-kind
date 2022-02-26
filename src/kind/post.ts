@@ -67,11 +67,11 @@ export class KindPostService {
       dirs.push(this.name);
     }
     dirs.push('logs');
-    return path.join(`${process.env['RUNNER_TEMP'] || ''}`, uuidv5(dirs.join('/'), uuidv5.URL));
+    return path.join(process.env['RUNNER_TEMP'] || '', uuidv5(dirs.join('/'), uuidv5.URL));
   }
 
   private artifactName(): string {
-    const artifactArgs: string[] = [`${process.env['GITHUB_JOB'] || ''}`, KIND_TOOL_NAME];
+    const artifactArgs: string[] = [process.env['GITHUB_JOB'] || '', KIND_TOOL_NAME];
     if (this.name != '') {
       artifactArgs.push(this.name);
     }

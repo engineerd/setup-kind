@@ -69,10 +69,7 @@ function createKindConfig() {
       ],
     };
     const dirs: string[] = [KIND_TOOL_NAME, core.getInput(Input.Name)];
-    const dir = path.join(
-      `${process.env['RUNNER_TEMP'] || ''}`,
-      uuidv5(dirs.join('/'), uuidv5.URL)
-    );
+    const dir = path.join(process.env['RUNNER_TEMP'] || '', uuidv5(dirs.join('/'), uuidv5.URL));
     return write(dir, 'kind-config.yaml', cluster);
   }
   return '';

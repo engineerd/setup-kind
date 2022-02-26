@@ -212,7 +212,7 @@ function checkVariables() {
     'RUNNER_TEMP',
     'RUNNER_TOOL_CACHE',
   ].forEach((variable) => {
-    ok(`${process.env[variable] || ''}`, `Expected ${variable} to be defined`);
+    ok(process.env[variable] || '', `Expected ${variable} to be defined`);
   });
 }
 
