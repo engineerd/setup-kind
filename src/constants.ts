@@ -30,11 +30,15 @@ export enum Flag {
 
 export const IS_WINDOWS = process.platform === 'win32';
 
-export const DOCKER_COMMAND = IS_WINDOWS ? 'docker.exe' : 'docker';
+function executableCommand(command: string) {
+  return IS_WINDOWS ? `${command}.exe` : command;
+}
 
-export const KIND_COMMAND = IS_WINDOWS ? 'kind.exe' : 'kind';
+export const DOCKER_COMMAND = executableCommand('docker');
+
+export const KIND_COMMAND = executableCommand('kind');
 export const KIND_DEFAULT_VERSION = 'v0.11.1';
 export const KIND_TOOL_NAME = 'kind';
 
-export const KUBECTL_COMMAND = IS_WINDOWS ? 'kubectl.exe' : 'kubectl';
+export const KUBECTL_COMMAND = executableCommand('kubectl');
 export const KUBECTL_TOOL_NAME = 'kubectl';
