@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
 import * as yaml from 'js-yaml';
 import { Input } from './constants';
+import { getDockerExecutionOutput } from './docker';
 import * as kubectl from './kubectl';
 import { ConfigMap } from './kubernetes';
 
@@ -56,7 +56,7 @@ async function getIPAddresses() {
     "'{{(index .IPAM.Config 0).Subnet}}'",
     'kind',
   ];
-  const { stdout } = await exec.getExecOutput('docker', args, { silent: true });
+  const { stdout } = await getDockerExecutionOutput(args, { silent: true });
   const bytes = stdout.replace(/'/g, '').split('.');
   return [`${bytes[0]}.${bytes[1]}.255.200-${bytes[0]}.${bytes[1]}.255.250`];
 }

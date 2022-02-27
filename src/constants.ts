@@ -30,6 +30,8 @@ export enum Flag {
 
 export const IS_WINDOWS = process.platform === 'win32';
 
+export const DOCKER_COMMAND = IS_WINDOWS ? 'docker.exe' : 'docker';
+
 export const KIND_COMMAND = IS_WINDOWS ? 'kind.exe' : 'kind';
 export const KIND_DEFAULT_VERSION = 'v0.11.1';
 export const KIND_TOOL_NAME = 'kind';

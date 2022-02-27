@@ -4,7 +4,7 @@ import path from 'path';
 import { v5 as uuidv5 } from 'uuid';
 import { Input, KUBECTL_COMMAND, KUBECTL_TOOL_NAME } from './constants';
 import { ConfigMap } from './kubernetes';
-import { write } from './yaml-helper';
+import { write } from './yaml/helper';
 
 export async function executeKubectl(args: string[]) {
   await exec.exec(KUBECTL_COMMAND, args);

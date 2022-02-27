@@ -53,7 +53,11 @@ describe('checking input parsing', function () {
   });
 
   it('correctly generates the cluster export logs command', () => {
-    const args: string[] = KindPostService.getInstance().exportLogsCommand();
+    const logsDir = KindPostService.getInstance().kindLogsDir();
+    expect(logsDir).toEqual(
+      path.normalize('/home/runner/work/_temp/1c1900ec-8f4f-5069-a966-1d3072cc9723')
+    );
+    const args: string[] = KindPostService.getInstance().exportLogsCommand(logsDir);
     expect(args).toEqual([
       'export',
       'logs',

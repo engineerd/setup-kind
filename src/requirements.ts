@@ -8,7 +8,7 @@ import { Input, KIND_DEFAULT_VERSION } from './constants';
 import { env as goenv } from './go';
 import { Cluster } from './kubernetes';
 import { hasRegistryConfig, KIND_REGISTRY, REGISTRY_NAME } from './local-registry';
-import { read } from './yaml-helper';
+import { read } from './yaml/helper';
 
 export async function checkEnvironment() {
   checkVariables();

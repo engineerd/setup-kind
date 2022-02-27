@@ -1,14 +1,14 @@
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
 import * as TOML from '@iarna/toml';
 import * as yaml from 'js-yaml';
 import path from 'path';
 import { v5 as uuidv5 } from 'uuid';
 import { Input, KIND_TOOL_NAME } from './constants';
 import { ConfigPatch } from './containerd';
+import { executeDocker } from './docker';
 import * as kubectl from './kubectl';
 import { Cluster, ConfigMap } from './kubernetes';
-import { write } from './yaml-helper';
+import { write } from './yaml/helper';
 
 export const REGISTRY_NAME = 'kind-registry';
 export const REGISTRY_HOST = 'localhost';
@@ -34,7 +34,7 @@ async function createRegistryUnlessAlreadyExists() {
 async function connectRegistryToClusterNetwork() {
   await core.group(`Connect ${REGISTRY_NAME} to the kind network`, async () => {
     const args = ['network', 'connect', 'kind', REGISTRY_NAME];
-    await exec.exec('docker', args);
+    await executeDocker(args);
   });
 }
 
@@ -53,7 +53,7 @@ async function createRegistry() {
         REGISTRY_NAME,
         REGISTRY_IMAGE,
       ];
-      await exec.exec('docker', args);
+      await executeDocker(args);
     }
   );
 }
@@ -77,7 +77,7 @@ function createKindConfig() {
 
 async function registryAlreadyExists() {
   const args = ['inspect', '-f', "'{{.State.Running}}'", REGISTRY_NAME];
-  const exitCode = await exec.exec('docker', args, {
+  const exitCode = await executeDocker(args, {
     ignoreReturnCode: true,
     silent: true,
   });
@@ -117,7 +117,7 @@ async function documentRegistry() {
   });
 }
 
-export function parseConfigPatch(configPatch: string) {
+function parseConfigPatch(configPatch: string) {
   return JSON.parse(JSON.stringify(TOML.parse(configPatch))) as ConfigPatch;
 }
 

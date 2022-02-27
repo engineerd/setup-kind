@@ -47,8 +47,8 @@ export class KindPostService {
   }
 
   // returns the arguments to pass to `kind export logs`
-  exportLogsCommand(): string[] {
-    const args: string[] = ['export', 'logs', this.kindLogsDir()];
+  exportLogsCommand(logsDir: string): string[] {
+    const args: string[] = ['export', 'logs', logsDir];
     if (this.verbosity > 0) {
       args.push(Flag.Verbosity, this.verbosity.toString());
     }
@@ -61,7 +61,7 @@ export class KindPostService {
     return args;
   }
 
-  private kindLogsDir(): string {
+  kindLogsDir(): string {
     const dirs: string[] = [KIND_TOOL_NAME];
     if (this.name != '') {
       dirs.push(this.name);
@@ -79,9 +79,8 @@ export class KindPostService {
     return artifactArgs.join('-');
   }
 
-  async uploadKindLogs() {
+  async uploadKindLogs(rootDirectory: string) {
     const artifactClient = artifact.create();
-    const rootDirectory = this.kindLogsDir();
     const pattern = rootDirectory + '/**/*';
     const globber = await glob.create(pattern);
     const files = await globber.glob();
@@ -105,8 +104,9 @@ export class KindPostService {
       return;
     }
     await core.group(`Export logs for cluster "${this.name}"`, async () => {
-      await executeKind(this.exportLogsCommand());
-      await this.uploadKindLogs();
+      const logsDir = this.kindLogsDir();
+      await executeKind(this.exportLogsCommand(logsDir));
+      await this.uploadKindLogs(logsDir);
     });
   }
 }
