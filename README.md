@@ -94,7 +94,9 @@ It is then available on localhost:5000 as KIND_REGISTRY on the host machine
 
 ## Self-hosted agents
 
-When using on a self-hosted agent, an access to GITHUB_API_URL (<https://api.github.com> by default) and <https://storage.googleapis.com/> are required for setup-kind to work properly.
+When using on a self-hosted agent, an access to GITHUB_API_URL (<https://api.github.com> by default) and <https://storage.googleapis.com> are required for setup-kind to work properly.
+
+NB: The load-balancer needs an access to <https://raw.githubusercontent.com>
 
 [kind-kubeconfig]: https://github.com/kubernetes-sigs/kind/issues/1060
 [gh-actions-path]:
