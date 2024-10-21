@@ -4,7 +4,7 @@ author: "Engineerd"
 inputs:
   version:
     description: "Version of Kind to use (default v0.11.1)"
-    default: "v0.11.1"
+    default: "v0.24.0"
     required: true
   config:
     description: "Path (relative to the root of the repository) to a kind config file"
