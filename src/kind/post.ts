@@ -88,19 +88,15 @@ export class KindPostService {
   }
 
   async uploadKindLogs() {
-    const artifactClient = artifact.create();
+    const artifactClient = new artifact.DefaultArtifactClient();
     const rootDirectory = this.kindLogsDir();
     const pattern = rootDirectory + '/**/*';
     const globber = await glob.create(pattern);
     const files = await globber.glob();
-    const options = {
-      continueOnError: true,
-    };
     await artifactClient.uploadArtifact(
       this.artifactName(),
       files,
       rootDirectory,
-      options
     );
   }
 
